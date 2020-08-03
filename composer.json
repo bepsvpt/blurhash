@@ -1,6 +1,6 @@
 {
   "name": "bepsvpt/blurhash",
-  "description": "BlurHash is a compact representation of a placeholder for an image.",
+  "description": "A PHP implementation of BlurHash with Laravel integration.",
   "keywords": ["blurhash", "laravel"],
   "homepage": "https://github.com/bepsvpt/blurhash",
   "type": "library",

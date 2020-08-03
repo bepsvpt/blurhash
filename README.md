@@ -5,7 +5,7 @@
 [![Total Downloads](https://poser.pugx.org/bepsvpt/blurhash/downloads)](https://packagist.org/packages/bepsvpt/blurhash)
 [![License](https://poser.pugx.org/bepsvpt/blurhash/license)](https://packagist.org/packages/bepsvpt/blurhash)
 
-A PHP implementation of [BlurHash](https://github.com/woltapp/blurhash).
+A PHP implementation of [BlurHash](https://github.com/woltapp/blurhash) with Laravel integration.
 
 BlurHash is a compact representation of a placeholder for an image.
 
