@@ -17,7 +17,7 @@ final class LaravelTest extends TestCase
      */
     protected function getPackageProviders($app)
     {
-        return ['Bepsvpt\BlurHash\BlurHashServiceProvider'];
+        return ['Bepsvpt\Blurhash\BlurHashServiceProvider'];
     }
 
     /**
