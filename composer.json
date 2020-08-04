@@ -18,6 +18,7 @@
     "intervention/image": "~2.5"
   },
   "require-dev": {
+    "composer/semver": "~1.5",
     "friendsofphp/php-cs-fixer": "~2.16",
     "orchestra/testbench": "~4.8|~5.3",
     "phpstan/phpstan": "~0.12",
@@ -36,7 +37,8 @@
   "autoload-dev": {
     "psr-4": {
       "Bepsvpt\\Blurhash\\Tests\\": "tests/"
-    }
+    },
+    "files": ["tests/helpers.php"]
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
