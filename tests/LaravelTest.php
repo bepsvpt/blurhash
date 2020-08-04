@@ -9,6 +9,27 @@ use Orchestra\Testbench\TestCase;
 final class LaravelTest extends TestCase
 {
     /**
+     * Different GD library will get different
+     * rgb value for same image pixel. Thus,
+     * the encoding will be different.
+     *
+     * @var bool
+     */
+    protected $isOldGdLibrary = false;
+
+    /**
+     * Setup the test environment.
+     *
+     * @return void
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->isOldGdLibrary = isOldGdLibrary();
+    }
+
+    /**
      * Get package providers.
      *
      * @param Application  $app
@@ -43,7 +64,7 @@ final class LaravelTest extends TestCase
         $this->assertNotEmpty($config['blurhash']);
 
         $this->assertSame(
-            'LITbcr$*hK%g%2j[e.jZhef6d=g3',
+            $this->isOldGdLibrary ? 'LITbcr$*hK%g%2j[e.jZhef6d=g3' : 'LITR{4$*hK%g%2j[e.jZhef6d=g3',
             BlurHash::encode(__DIR__.'/images/5.png')
         );
     }
