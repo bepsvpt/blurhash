@@ -75,7 +75,7 @@ final class BlurHashTest extends TestCase
         $hash->setResizedImageMaxWidth(48);
 
         $this->assertSame(
-            $this->isOldGdLibrary ? 'LyTPVXtRe.t7.mkCfkkWlTenene.' : 'LUQr@dx]nOoLY*ozkCNbC+rrrXn%',
+            $this->isOldGdLibrary ? 'LyTPVXtRe.t7.mkCfkkWlTenene.' : 'LUQr^lx]nOofY*ozkCNuC+rrrXjZ',
             $hash->encode(__DIR__.'/images/4.png')
         );
 
@@ -89,7 +89,7 @@ final class BlurHashTest extends TestCase
         $hash->setResizedImageMaxWidth(96);
 
         $this->assertSame(
-            $this->isOldGdLibrary ? 'LrTQ4BozeTo}*Jfkf6f+lTenemen' : 'LVQQ5jXSrXbvLzWVV@bbCQrrrXni',
+            $this->isOldGdLibrary ? 'LrTQ4BozeTo}*Jfkf6f+lTenemen' : 'LVQQ5jX8rXbvLzWBV@bbCQrrrXni',
             $hash->encode(__DIR__.'/images/4.png')
         );
     }
