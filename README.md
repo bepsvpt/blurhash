@@ -47,15 +47,16 @@ Done!
 BlurHash::encode($file);
 ```
 
-`$file` can be any [Intervention make](http://image.intervention.io/api/make) method acceptable source.
+`$file` can be any [Intervention make method](http://image.intervention.io/api/make) acceptable source.
 
 ### app helper function
 
 ```php
-app('blurhash')->setComponentX(7)
-->setComponentY(4)
-->setResizedImageMaxWidth(96)
-->encode($file);
+app('blurhash')
+  ->setComponentX(7)
+  ->setComponentY(4)
+  ->setResizedImageMaxWidth(96)
+  ->encode(request('file'));
 ```
 
 ## License
