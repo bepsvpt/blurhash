@@ -48,7 +48,7 @@
         "Bepsvpt\\Blurhash\\BlurHashServiceProvider"
       ],
       "aliases": {
-        "Blurhash": "Bepsvpt\\Blurhash\\Facades\\BlurHash"
+        "BlurHash": "Bepsvpt\\Blurhash\\Facades\\BlurHash"
       }
     }
   }
