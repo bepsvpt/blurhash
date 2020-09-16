@@ -14,15 +14,15 @@
   "require": {
     "php": "^7.2",
     "ext-gd": "*",
-    "illuminate/support": "~6.0|~7.0",
+    "illuminate/support": "~6.0|~7.0|~8.0",
     "intervention/image": "~2.5"
   },
   "require-dev": {
     "composer/semver": "~1.5",
     "friendsofphp/php-cs-fixer": "~2.16",
-    "orchestra/testbench": "~4.8|~5.3",
+    "orchestra/testbench": "~4.8|~5.3|~6.0",
     "phpstan/phpstan": "~0.12",
-    "phpunit/phpunit": "~8.5"
+    "phpunit/phpunit": "~8.5|~9.3"
   },
   "config": {
     "optimize-autoloader": true,
