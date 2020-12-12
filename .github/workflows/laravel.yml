@@ -4,8 +4,8 @@ on:
   push:
   pull_request:
   schedule:
-    # run tests every day
-    - cron: '0 0 * * *'
+    # run tests on every week Monday
+    - cron: '0 0 * * 1'
 
 jobs:
   static_analysis:
@@ -23,6 +23,16 @@ jobs:
           tools: composer:v2, composer-normalize, php-cs-fixer, phpstan
           extensions: dom, fileinfo, gd, mbstring, xdebug
 
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-static-analysis-${{ hashFiles('**/composer.json') }}
+
       - name: Install dependencies
         run: composer update --no-interaction --no-progress
 
@@ -39,7 +49,7 @@ jobs:
         run: php-cs-fixer fix --dry-run -vvv
 
   unit_tests:
-    name: Laravel ${{ matrix.laravel }} (${{ matrix.os }}, ${{ matrix.php }})
+    name: Laravel ${{ matrix.laravel }} (${{ matrix.php }}, ${{ matrix.os }})
 
     runs-on: ${{ matrix.os }}
 
@@ -47,12 +57,11 @@ jobs:
       fail-fast: false
 
       matrix:
-        laravel: ['6', '7', '8']
-        php: ['7.2', '7.3', '7.4', '8.0']
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        laravel: [ '8', '7', '6' ]
+        php: [ '8.0', '7.4', '7.3', '7.2' ]
+        os: [ ubuntu-latest, windows-latest, macOS-latest ]
         exclude:
-          - php: '7.2'
-            laravel: '8'
+          - { laravel: '8', php: '7.2' }
 
     steps:
       - uses: actions/checkout@v2
@@ -72,10 +81,10 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-laravel-${{ matrix.laravel }}-php-${{ matrix.php }}-
+          key: ${{ runner.os }}-composer-laravel-${{ matrix.laravel }}-php-${{ matrix.php }}-${{ hashFiles('**/composer.json') }}
 
       - name: Install dependencies
-        run: composer update --with illuminate/support:~${{ matrix.laravel }} --no-interaction --no-progress
+        run: composer update --with illuminate/support:~${{ matrix.laravel }} --with-all-dependencies --no-interaction --no-progress
 
       - name: Run PHPUnit
         run: phpunit -d memory_limit=-1 -vvv
