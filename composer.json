@@ -1,9 +1,12 @@
 {
   "name": "bepsvpt/blurhash",
-  "description": "A PHP implementation of BlurHash with Laravel integration.",
-  "keywords": ["blurhash", "laravel"],
-  "homepage": "https://github.com/bepsvpt/blurhash",
   "type": "library",
+  "description": "A PHP implementation of BlurHash with Laravel integration.",
+  "keywords": [
+    "blurhash",
+    "laravel"
+  ],
+  "homepage": "https://github.com/bepsvpt/blurhash",
   "license": "MIT",
   "authors": [
     {
@@ -12,22 +15,32 @@
     }
   ],
   "require": {
-    "php": "^7.2|^8.0",
+    "php": "^7.2 || ^8.0",
     "ext-gd": "*",
-    "illuminate/support": "~6.0|~7.0|~8.0",
+    "illuminate/support": "~6.0 || ~7.0 || ~8.0",
     "intervention/image": "~2.5"
   },
   "require-dev": {
     "composer/semver": "~1.5",
     "friendsofphp/php-cs-fixer": "~2.16",
-    "orchestra/testbench": "~4.8|~5.3|~6.0",
+    "orchestra/testbench": "~4.8 || ~5.3 || ~6.0",
     "phpstan/phpstan": "~0.12",
-    "phpunit/phpunit": "~8.5|~9.3"
+    "phpunit/phpunit": "~8.5 || ~9.3"
   },
   "config": {
     "optimize-autoloader": true,
     "preferred-install": "dist",
     "sort-packages": true
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Bepsvpt\\Blurhash\\BlurHashServiceProvider"
+      ],
+      "aliases": {
+        "BlurHash": "Bepsvpt\\Blurhash\\Facades\\BlurHash"
+      }
+    }
   },
   "autoload": {
     "psr-4": {
@@ -38,18 +51,10 @@
     "psr-4": {
       "Bepsvpt\\Blurhash\\Tests\\": "tests/"
     },
-    "files": ["tests/helpers.php"]
+    "files": [
+      "tests/helpers.php"
+    ]
   },
   "minimum-stability": "dev",
-  "prefer-stable": true,
-  "extra": {
-    "laravel": {
-      "providers": [
-        "Bepsvpt\\Blurhash\\BlurHashServiceProvider"
-      ],
-      "aliases": {
-        "BlurHash": "Bepsvpt\\Blurhash\\Facades\\BlurHash"
-      }
-    }
-  }
+  "prefer-stable": true
 }
