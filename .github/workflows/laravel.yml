@@ -42,12 +42,12 @@ jobs:
       fail-fast: false
 
       matrix:
-        laravel: ['6.0', '7.0', '8.0']
+        laravel: ['6', '7', '8']
         php: ['7.2', '7.3', '7.4', '8.0']
         os: [ubuntu-latest, windows-latest, macOS-latest]
         exclude:
           - php: '7.2'
-            laravel: '8.0'
+            laravel: '8'
 
     steps:
       - uses: actions/checkout@v2
