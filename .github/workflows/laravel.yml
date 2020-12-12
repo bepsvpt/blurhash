@@ -1,6 +1,11 @@
 name: Laravel
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  schedule:
+    # run tests every day
+    - cron: '0 0 * * *'
 
 jobs:
   static_analysis:
