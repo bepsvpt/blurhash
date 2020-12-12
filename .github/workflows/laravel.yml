@@ -4,63 +4,63 @@ on: [push, pull_request]
 
 jobs:
   static_analysis:
+    name: Static Analysis
+
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup PHP, Composer and Extensions
-        uses: shivammathur/setup-php@v1
+      - name: Setup PHP, Tools and Extensions
+        uses: shivammathur/setup-php@v2
         with:
           php-version: '7.4'
+          tools: composer:v2, composer-normalize, php-cs-fixer, phpstan
           extensions: dom, fileinfo, gd, mbstring, xdebug
 
       - name: Install dependencies
-        run: composer update --optimize-autoloader --no-interaction --no-progress --no-suggest
+        run: composer update --no-interaction --no-progress
+
+      - name: Run Composer Validate
+        run: composer validate --strict
+
+      - name: Run Composer Normalize
+        run: composer-normalize --dry-run
 
       - name: Run PHPStan
-        run: vendor/bin/phpstan analyse --verbose
+        run: phpstan analyse --memory-limit=-1 -vvv
 
       - name: Run PHP-CS-Fixer
-        run: vendor/bin/php-cs-fixer fix --verbose --dry-run
+        run: php-cs-fixer fix --dry-run -vvv
 
+  unit_tests:
+    name: Laravel ${{ matrix.laravel }} (${{ matrix.os }}, ${{ matrix.php }})
 
-  laravel_6_x_to_7_x:
-    runs-on: ${{ matrix.operating-system }}
+    runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
 
       matrix:
-        operating-system: [ubuntu-latest, windows-latest, macOS-latest]
-        php-versions: ['7.2', '7.3', '7.4']
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        php: ['7.2', '7.3', '7.4']
+        laravel: ['6.0', '7.0', '8.0']
+        exclude:
+          - php: '7.2'
+            laravel: '8.0'
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup PHP, Composer and Extensions
-        uses: shivammathur/setup-php@v1
+      - name: Setup PHP, Tools and Extensions
+        uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: ${{ matrix.php }}
+          tools: composer:v2, phpunit:8.5.13
           extensions: dom, fileinfo, gd, mbstring, xdebug
 
-      - name: Remove php-cs-fixer and phpstan
-        run: composer remove "friendsofphp/php-cs-fixer" "phpstan/phpstan" --dev --no-update
-
-      - name: Add 4.* Testbench and 8.* PHPUnit to dev dependencies
-        run: composer require "orchestra/testbench:~4.0" "phpunit/phpunit:~8.0" --dev --no-interaction --no-suggest --no-update
-
       - name: Install dependencies
-        run: composer update --optimize-autoloader --no-interaction --no-progress --no-suggest
+        run: composer update --with illuminate/support:~${{ matrix.laravel }} --no-interaction --no-progress
 
-      - name: Test against Laravel 6.x
-        run: vendor/bin/phpunit
-
-      - name: Add 5.* Testbench and 8.* PHPUnit to dev dependencies
-        run: composer require "orchestra/testbench:~5.0" "phpunit/phpunit:~8.4" --dev --no-interaction --no-suggest --no-update
-
-      - name: Install dependencies
-        run: composer update --optimize-autoloader --no-interaction --no-progress --no-suggest
-
-      - name: Test against Laravel 7.x
-        run: vendor/bin/phpunit
+      - name: Run PHPUnit
+        run: phpunit -d memory_limit=-1 -vvv
