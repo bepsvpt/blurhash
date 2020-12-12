@@ -59,6 +59,16 @@ jobs:
           tools: composer:v2, phpunit:8.5.13
           extensions: dom, fileinfo, gd, mbstring, xdebug
 
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-laravel-${{ matrix.laravel }}-php-${{ matrix.php }}-
+
       - name: Install dependencies
         run: composer update --with illuminate/support:~${{ matrix.laravel }} --no-interaction --no-progress
 
