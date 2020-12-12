@@ -395,6 +395,7 @@ final class BlurHash
                  * https://www.php.net/manual/en/function.imagecolorat.php#example-3799
                  */
 
+                /** @phpstan-ignore-next-line */
                 $rgb = imagecolorat($resource, $x, $y);
 
                 $colors[$x][$y] = [

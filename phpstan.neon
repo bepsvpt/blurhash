@@ -15,8 +15,3 @@ parameters:
             message: "#Call to an undefined method Illuminate\\\\Contracts\\\\Foundation\\\\Application\\:\\:configure\\(\\)\\.#"
             count: 1
             path: src/BlurHashServiceProvider.php
-
-        -
-            message: "#Parameter \\#1 \\$image of function imagecolorat expects GdImage, resource given\\.#"
-            count: 1
-            path: src/BlurHash.php
