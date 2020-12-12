@@ -5,6 +5,8 @@ parameters:
         - src
         - tests
 
+    reportUnmatchedIgnoredErrors: false
+
     ignoreErrors:
         -
             message: "#Class Laravel\\\\Lumen\\\\Application not found\\.#"
