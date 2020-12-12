@@ -22,10 +22,12 @@
   },
   "require-dev": {
     "composer/semver": "~1.5",
-    "friendsofphp/php-cs-fixer": "~2.16",
-    "orchestra/testbench": "~4.8 || ~5.3 || ~6.0",
-    "phpstan/phpstan": "~0.12",
-    "phpunit/phpunit": "~8.5 || ~9.3"
+    "orchestra/testbench": "~4.8 || ~5.3 || ~6.0"
+  },
+  "suggest": {
+    "friendsofphp/php-cs-fixer": "Coding style fixer",
+    "phpstan/phpstan": "Static analysis tool",
+    "phpunit/phpunit": "PHP unit testing framework"
   },
   "config": {
     "optimize-autoloader": true,
