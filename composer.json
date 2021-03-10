@@ -36,12 +36,12 @@
   },
   "extra": {
     "laravel": {
-      "providers": [
-        "Bepsvpt\\Blurhash\\BlurHashServiceProvider"
-      ],
       "aliases": {
         "BlurHash": "Bepsvpt\\Blurhash\\Facades\\BlurHash"
-      }
+      },
+      "providers": [
+        "Bepsvpt\\Blurhash\\BlurHashServiceProvider"
+      ]
     }
   },
   "autoload": {
