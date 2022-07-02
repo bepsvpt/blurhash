@@ -405,23 +405,41 @@ class BlurHash
 
         $cache = [];
 
+        $isTrueColor = imageistruecolor($image);
+
         for ($x = 0; $x < $this->imageWidth; ++$x) {
             $colors[$x] = [];
 
             for ($y = 0; $y < $this->imageHeight; ++$y) {
-                /*
-                 * Use imagecolorsforindex will be slower than binary operation.
-                 *
-                 * https://www.php.net/manual/en/function.imagecolorsforindex.php#79459
-                 * https://www.php.net/manual/en/function.imagecolorat.php#example-2657
-                 */
                 $rgb = imagecolorat($image, $x, $y);
 
+                if ($rgb === false) {
+                    throw new RuntimeException(
+                        sprintf(
+                            'Something went wrong when getting image color at x: %d, y: %d.',
+                            $x,
+                            $y,
+                        )
+                    );
+                }
+
                 if (!isset($cache[$rgb])) {
+                    if ($isTrueColor) {
+                        $red = ($rgb >> 16) & 0xFF;
+                        $green = ($rgb >> 8) & 0xFF;
+                        $blue = $rgb & 0xFF;
+                    } else {
+                        [
+                            'red'   => $red,
+                            'green' => $green,
+                            'blur'  => $blue,
+                        ] = imagecolorsforindex($image, $rgb);
+                    }
+
                     $cache[$rgb] = [
-                        self::$rgbToLinearMap[($rgb >> 16) & 0xFF],
-                        self::$rgbToLinearMap[($rgb >> 8) & 0xFF],
-                        self::$rgbToLinearMap[$rgb & 0xFF],
+                        self::$rgbToLinearMap[$red],
+                        self::$rgbToLinearMap[$green],
+                        self::$rgbToLinearMap[$blue],
                     ];
                 }
 
