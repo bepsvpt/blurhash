@@ -34,10 +34,12 @@ class LaravelTest extends TestCase
 
     public function testPackageLoaded(): void
     {
-        BlurHash::decode('LITbcr$*hK%g%2j[e.jZhef6d=g3', 360, 360);
-
         $this->assertSame(
-            'LITbcr$*hK%g%2j[e.jZhef6d=g3',
+            match (PHP_OS_FAMILY) {
+                'Darwin' => 'LITbcr$*hK%g%2j[e.jZhef6d=g3',
+                'Windows' => 'LITbcr$*hK%g%2j[e.jZhef6d=g3',
+                default => 'LITR{4$*hK%g%2j[e.jZhef6d=g3',
+            },
             BlurHash::encode(__DIR__ . '/images/5.png')
         );
     }
