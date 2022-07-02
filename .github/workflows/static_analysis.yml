@@ -44,5 +44,5 @@ jobs:
       - name: Run PHPStan
         run: vendor/bin/phpstan --memory-limit=-1 -vvv
 
-      - name: Run PHP-CS-Fixer
+      - name: Run Pint
         run: vendor/bin/pint -v --test
