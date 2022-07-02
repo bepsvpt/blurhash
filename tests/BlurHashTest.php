@@ -9,7 +9,7 @@ class BlurHashTest extends TestCase
 {
     public function testEncode(): void
     {
-        $hash = new BlurHash;
+        $hash = new BlurHash();
 
         $this->assertSame(
             match (PHP_OS_FAMILY) {
@@ -35,7 +35,7 @@ class BlurHashTest extends TestCase
                 'Darwin', 'Windows' => 'LCTQ_c*|f+-V+HkWdCi_hedpgNg$',
                 default => 'L9On@3|HkW#-00tl:6RP7|*|pIT{',
             },
-            (new BlurHash)->encode(__DIR__ . '/images/3.png')
+            (new BlurHash())->encode(__DIR__ . '/images/3.png')
         );
 
         $this->assertSame(
@@ -57,7 +57,7 @@ class BlurHashTest extends TestCase
 
     public function testEncodeDifferentImageWidth(): void
     {
-        $hash = new BlurHash;
+        $hash = new BlurHash();
 
         $this->assertSame(
             match (PHP_OS_FAMILY) {
@@ -95,6 +95,19 @@ class BlurHashTest extends TestCase
                 default => 'LVQGj_X8rXbvLzWBV@bbCQrrrXni',
             },
             $hash->encode(__DIR__ . '/images/4.png')
+        );
+    }
+
+    public function testEncodeWithGifFormat(): void
+    {
+        $hash = new BlurHash();
+
+        $this->assertSame(
+            match (PHP_OS_FAMILY) {
+                'Darwin', 'Windows' => 'LdIiLaD+%Mt75xIUoHWBR2oIV=WB',
+                default => 'LNTRQZv#lnx]wJj[eTjFl.eneTgh',
+            },
+            $hash->encode(__DIR__ . '/images/6.gif')
         );
     }
 }
