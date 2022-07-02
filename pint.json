@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "concat_space": {
+      "spacing": "one"
+    },
+    "increment_style": {
+      "style": "pre"
+    },
+    "not_operator_with_successor_space": false
+  }
+}

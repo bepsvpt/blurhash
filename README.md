@@ -15,11 +15,11 @@ BlurHash is a compact representation of a placeholder for an image.
 
 ## Version
 
-1.0.1
+2.0.0
 
 ## Supported Laravel Version
 
-6.0 ~ 9.x
+8.0 ~ 9.x
 
 ## Installation
 
@@ -35,7 +35,7 @@ Publish config file
 php artisan vendor:publish --provider="Bepsvpt\Blurhash\BlurHashServiceProvider"
 ```
 
-Set up config file config/blurhash.php
+Set up config file on config/blurhash.php
 
 Done!
 
@@ -47,7 +47,7 @@ Done!
 BlurHash::encode($file);
 ```
 
-`$file` can be any [Intervention make method](http://image.intervention.io/api/make) acceptable source.
+`$file` can be any [Intervention make method](https://image.intervention.io/v2/api/make) acceptable source.
 
 ### app helper function
 

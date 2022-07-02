@@ -2,28 +2,28 @@
 
 namespace Bepsvpt\Blurhash;
 
-final class Base83
+class Base83
 {
     /**
      * Base 63 encoder/decoder character set.
      *
-     * @var string[]
+     * @var array<int, string>
      */
-    public static $characters = [
+    public static array $characters = [
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
         'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
         'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
         'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
         'u', 'v', 'w', 'x', 'y', 'z', '#', '$', '%', '*', '+', ',', '-', '.',
-        ':', ';', '=', '?', '@', '[', ']', '^', '_', '{', '|', '}', '~'
+        ':', ';', '=', '?', '@', '[', ']', '^', '_', '{', '|', '}', '~',
     ];
 
     /**
      * Base 63 encoder/decoder character index map.
      *
-     * @var int[]
+     * @var array<int|string, int>
      */
-    protected static $indexMap = [
+    protected static array $indexMap = [
         '0' => 0, '1' => 1, '2' => 2, '3' => 3, '4' => 4,
         '5' => 5, '6' => 6, '7' => 7, '8' => 8, '9' => 9,
         'A' => 10, 'B' => 11, 'C' => 12, 'D' => 13, 'E' => 14, 'F' => 15,
@@ -44,9 +44,8 @@ final class Base83
     /**
      * Encode an integer to string.
      *
-     * @param int $value
-     * @param int $length
-     *
+     * @param  int  $value
+     * @param  int  $length
      * @return string
      */
     public static function encode(int $value, int $length): string
@@ -59,6 +58,22 @@ final class Base83
             $digit = intval($value / $powOf83[$length - $i]) % 83;
 
             $result .= self::$characters[$digit];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Decode a string to integer.
+     *
+     * @param  string  $encoded
+     * @return int
+     */
+    public static function decode(string $encoded): int {
+        $result = 0;
+
+        foreach (str_split($encoded) as $char) {
+            $result = $result * 83 + static::$indexMap[$char];
         }
 
         return $result;
