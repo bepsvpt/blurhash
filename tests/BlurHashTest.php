@@ -13,15 +13,15 @@ class BlurHashTest extends TestCase
 
         $this->assertSame(
             match (PHP_OS_FAMILY) {
-                'Darwin', 'Windows' => 'LNTa[Gv}hKx]wJj[eTjZheeneTgh',
-                default => 'LNTRThv#lnx]wJj[eTjFl.eneTgh',
+                'Darwin', 'Windows' => 'LNTRThv}hKx]wJj[eTjZheeneTgh',
+                default => 'LNTRThv}hKx]wJj[eTjZheeneTgh',
             },
             $hash->encode(__DIR__ . '/images/1.png')
         );
 
         $this->assertSame(
             match (PHP_OS_FAMILY) {
-                'Darwin', 'Windows' => 'LvTa3}rXe9rr%Miwenj[hee9ene.',
+                'Darwin', 'Windows' => 'LvTQfPrXe9rr%Miwenj[hee9ene.',
                 default => 'LRP;cSvMz;#mbb#-w{oz4S+bv#jF',
             },
             $hash->encode(__DIR__ . '/images/2.png')
@@ -32,15 +32,15 @@ class BlurHashTest extends TestCase
     {
         $this->assertSame(
             match (PHP_OS_FAMILY) {
-                'Darwin', 'Windows' => 'LCTafB*|f+-V+HkWdCi_hedpgNg$',
-                default => 'L9OxXq|HkW#-00tl:6RP7|*|pIT{',
+                'Darwin', 'Windows' => 'LCTQ_c*|f+-V+HkWdCi_hedpgNg$',
+                default => 'LCTQ_c*|f+-V+HkWdCi_hedpgNg$',
             },
             (new BlurHash)->encode(__DIR__ . '/images/3.png')
         );
 
         $this->assertSame(
             match (PHP_OS_FAMILY) {
-                'Darwin', 'Windows' => '00TafB',
+                'Darwin', 'Windows' => '00TQ_c',
                 default => '00OxXq',
             },
             (new BlurHash(1, 1))->encode(__DIR__ . '/images/3.png')
@@ -48,7 +48,7 @@ class BlurHashTest extends TestCase
 
         $this->assertSame(
             match (PHP_OS_FAMILY) {
-                'Darwin', 'Windows' => '|CTafB*|f+-Vg$*|dC-Vd=+HkWdCi_g3kqeTi_gNhedpgNg$fkg3f+gNh0.8h}e.ich0icg3iwd=g$enghghgNeng$g3en.SjFe.i_eSkqghk=fkhKeng3ghf+ghgNe9dq-;kCe.i_h0lngNk=g3enghf6gNe9eTgNg$g3',
+                'Darwin', 'Windows' => '|CTQ_c*|f+-Vg$*|dC-Vd=+HkWdCi_g3kqeTi_gNhedpgNg$fkg3f+gNh0.8h}e.ich0icg3iwd=g$enghghgNeng$g3en.SjFe.i_eSkqghk=fkhKeng3ghf+ghgNe9dq-;kCe.i_h0lngNk=g3enghf6gNe9eTgNg$g3',
                 default => '|9OxXq|HkW#-F_:Ql:-U+^00tl:6RPNGpIv~R5Xm7|*|pIT{M{4.W;k=Gt00*|RPQ-L1#8NGrq#8BTaJt,cYI:xaKiIoiw00xaRPR5VEELO?PAWBG[xGo}O?tRFwS~#S:+00xuRPVYL1C6J7FJIo^+pcofOXQ-rXJRPAx]',
             },
             (new BlurHash(9, 9))->encode(__DIR__ . '/images/3.png')
@@ -61,8 +61,8 @@ class BlurHashTest extends TestCase
 
         $this->assertSame(
             match (PHP_OS_FAMILY) {
-                'Darwin', 'Windows' => 'LxTZP4tRe9t7*Jj[f6kCh0enene.',
-                default => 'LxTPuEtRe9t7*Jj[f6kCh0enene.',
+                'Darwin', 'Windows' => 'LxTP#UtRe9t7*Jj[f6kCh0enene.',
+                default => 'LxTP#UtRe9t7*Jj[f6kCh0enene.',
             },
             $hash->encode(__DIR__ . '/images/4.png')
         );
@@ -71,7 +71,7 @@ class BlurHashTest extends TestCase
 
         $this->assertSame(
             match (PHP_OS_FAMILY) {
-                'Darwin', 'Windows' => 'LyTY?~tRe.t7.mkCfkkWh0enene.',
+                'Darwin', 'Windows' => 'LyTPVWtRe.t7.mkCfkkWh0enene.',
                 default => 'LUQr^lx]nOofY*ozkCNuC+rrrXjZ',
             },
             $hash->encode(__DIR__ . '/images/4.png')
@@ -81,7 +81,7 @@ class BlurHashTest extends TestCase
 
         $this->assertSame(
             match (PHP_OS_FAMILY) {
-                'Darwin', 'Windows' => 'L*TYLSxaeTxu?^kCf6kWhKe.enf6',
+                'Darwin', 'Windows' => 'L*TOwtxaeTxu?^kCf6kWhKe.enf6',
                 default => 'L$TOqdxue9xu?^kCe.kWhKe.eTfk',
             },
             $hash->encode(__DIR__ . '/images/4.png')
@@ -91,7 +91,7 @@ class BlurHashTest extends TestCase
 
         $this->assertSame(
             match (PHP_OS_FAMILY) {
-                'Darwin', 'Windows' => 'LrTZkyozeTo}*Jfkf6f+h0enemen',
+                'Darwin', 'Windows' => 'LrTQ13ozeTo}*Jfkf6f+h0enemen',
                 default => 'LVQQ5jX8rXbvLzWBV@bbCQrrrXni',
             },
             $hash->encode(__DIR__ . '/images/4.png')

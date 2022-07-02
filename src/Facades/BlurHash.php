@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static string encode(mixed $data)
- * @method static string decode(string $blurhash, int $width, int $height)
+ * @method static \Intervention\Image\Image decode(string $blurhash, int $width, int $height)
  * @method static \Bepsvpt\Blurhash\BlurHash setComponentX(int $componentX)
  * @method static \Bepsvpt\Blurhash\BlurHash setComponentY(int $componentY)
  * @method static \Bepsvpt\Blurhash\BlurHash setResizedImageMaxWidth(int $imageWidth)
