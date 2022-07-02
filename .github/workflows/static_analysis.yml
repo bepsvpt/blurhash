@@ -39,7 +39,7 @@ jobs:
         run: composer validate
 
       - name: Run Composer Normalize
-        run: composer-normalize --dry-run
+        run: composer normalize --dry-run
 
       - name: Run PHPStan
         run: vendor/bin/phpstan --memory-limit=-1 -vvv
