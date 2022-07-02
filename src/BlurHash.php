@@ -6,7 +6,6 @@ use GdImage;
 use Intervention\Image\Constraint;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
-use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 

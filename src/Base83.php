@@ -69,7 +69,8 @@ class Base83
      * @param  string  $encoded
      * @return int
      */
-    public static function decode(string $encoded): int {
+    public static function decode(string $encoded): int
+    {
         $result = 0;
 
         foreach (str_split($encoded) as $char) {
