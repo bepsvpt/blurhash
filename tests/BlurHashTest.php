@@ -41,7 +41,7 @@ class BlurHashTest extends TestCase
         $this->assertSame(
             match (PHP_OS_FAMILY) {
                 'Darwin', 'Windows' => '00TQ_c',
-                default => '00OxXq',
+                default => '00On@3',
             },
             (new BlurHash(1, 1))->encode(__DIR__ . '/images/3.png')
         );
@@ -72,7 +72,7 @@ class BlurHashTest extends TestCase
         $this->assertSame(
             match (PHP_OS_FAMILY) {
                 'Darwin', 'Windows' => 'LyTPVWtRe.t7.mkCfkkWh0enene.',
-                default => 'LUQr^lx]nOofY*ozkCNuC+rrrXjZ',
+                default => 'LUQr@dx]nOofY*ozkCNuC+rrrXjZ',
             },
             $hash->encode(__DIR__ . '/images/4.png')
         );
