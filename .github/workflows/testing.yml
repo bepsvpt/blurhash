@@ -1,4 +1,4 @@
-name: Laravel
+name: Testing
 
 on:
   push:
@@ -14,21 +14,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setup PHP, Tools and Extensions
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
-          tools: composer:v2, composer-normalize, php-cs-fixer, phpstan
-          extensions: dom, fileinfo, gd, mbstring, xdebug
+          php-version: '8.1'
+          coverage: xdebug
 
       - name: Get composer cache directory
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
       - name: Cache dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-static-analysis-${{ hashFiles('**/composer.json') }}
@@ -36,20 +35,23 @@ jobs:
       - name: Install dependencies
         run: composer update --no-interaction --no-progress
 
+      - name: Check runtime dependencies
+        run: composer check-platform-reqs
+
       - name: Run Composer Validate
-        run: composer validate --strict
+        run: composer validate
 
       - name: Run Composer Normalize
-        run: composer-normalize --dry-run
+        run: composer normalize --dry-run
 
       - name: Run PHPStan
-        run: phpstan analyse --memory-limit=-1 -vvv
+        run: vendor/bin/phpstan --memory-limit=-1 -vvv
 
-      - name: Run PHP-CS-Fixer
-        run: php-cs-fixer fix --dry-run -vvv
+      - name: Run Pint
+        run: vendor/bin/pint -v --test
 
-  unit_tests:
-    name: Laravel ${{ matrix.laravel }} (${{ matrix.php }}, ${{ matrix.os }})
+  testing:
+    name: Laravel ${{ matrix.laravel }}, PHP ${{ matrix.php }}, OS ${{ matrix.os }}
 
     runs-on: ${{ matrix.os }}
 
@@ -57,34 +59,32 @@ jobs:
       fail-fast: false
 
       matrix:
-        laravel: [ '8', '7', '6' ]
-        php: [ '8.0', '7.4', '7.3', '7.2' ]
+        laravel: [ '9', '8' ]
+        php: [ '8.1', '8.0' ]
         os: [ ubuntu-latest, windows-latest, macOS-latest ]
-        exclude:
-          - { laravel: '8', php: '7.2' }
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setup PHP, Tools and Extensions
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          tools: composer:v2, phpunit:8.5.13
-          extensions: dom, fileinfo, gd, mbstring, xdebug
+          coverage: xdebug
+          extensions: fileinfo, gd
 
       - name: Get composer cache directory
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
       - name: Cache dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-laravel-${{ matrix.laravel }}-php-${{ matrix.php }}-${{ hashFiles('**/composer.json') }}
 
       - name: Install dependencies
-        run: composer update --with illuminate/support:~${{ matrix.laravel }} --with-all-dependencies --no-interaction --no-progress
+        run: composer update --with illuminate/support:~${{ matrix.laravel }} --no-interaction --no-progress
 
-      - name: Run PHPUnit
-        run: phpunit -d memory_limit=-1 -vvv
+      - name: Run tests
+        run: vendor/bin/phpunit -d memory_limit=-1 -vvv

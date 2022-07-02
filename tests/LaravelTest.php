@@ -4,39 +4,18 @@ namespace Bepsvpt\Blurhash\Tests;
 
 use Bepsvpt\Blurhash\Facades\BlurHash;
 use Illuminate\Foundation\Application;
+use Intervention\Image\Image;
 use Orchestra\Testbench\TestCase;
 
-final class LaravelTest extends TestCase
+class LaravelTest extends TestCase
 {
-    /**
-     * Different GD library will get different
-     * rgb value for same image pixel. Thus,
-     * the encoding will be different.
-     *
-     * @var bool
-     */
-    protected $isOldGdLibrary = false;
-
-    /**
-     * Setup the test environment.
-     *
-     * @return void
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->isOldGdLibrary = isOldGdLibrary();
-    }
-
     /**
      * Get package providers.
      *
-     * @param Application  $app
-     *
-     * @return array<string>
+     * @param  Application  $app
+     * @return array<int, class-string>
      */
-    protected function getPackageProviders($app)
+    protected function getPackageProviders($app): array
     {
         return ['Bepsvpt\Blurhash\BlurHashServiceProvider'];
     }
@@ -44,28 +23,31 @@ final class LaravelTest extends TestCase
     /**
      * Get package aliases.
      *
-     * @param Application $app
-     *
-     * @return array<string>
+     * @param  Application  $app
+     * @return array<string, class-string>
      */
-    protected function getPackageAliases($app)
+    protected function getPackageAliases($app): array
     {
         return [
-            'BlurHash' => 'Bepsvpt\Blurhash\Facades\BlurHash'
+            'BlurHash' => 'Bepsvpt\Blurhash\Facades\BlurHash',
         ];
     }
 
     public function testPackageLoaded(): void
     {
-        $config = $this->app['config'];
-
-        $this->assertArrayHasKey('blurhash', $config);
-
-        $this->assertNotEmpty($config['blurhash']);
+        $hash = match (PHP_OS_FAMILY) {
+            'Darwin', 'Windows' => 'LITR[|$*hK%g%2j[e.jZhef6d=g3',
+            default => 'LITR[|$*hK%g%2j[e.jZhef6d=g3',
+        };
 
         $this->assertSame(
-            $this->isOldGdLibrary ? 'LITbcr$*hK%g%2j[e.jZhef6d=g3' : 'LITR{4$*hK%g%2j[e.jZhef6d=g3',
-            BlurHash::encode(__DIR__.'/images/5.png')
+            $hash,
+            BlurHash::encode(__DIR__ . '/images/5.png'),
+        );
+
+        $this->assertInstanceOf(
+            Image::class,
+            BlurHash::decode($hash, 32, 32),
         );
     }
 }

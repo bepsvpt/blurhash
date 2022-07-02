@@ -2,10 +2,14 @@
 
 namespace Bepsvpt\Blurhash;
 
+use GdImage;
 use Intervention\Image\Constraint;
+use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
+use RuntimeException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-final class BlurHash
+class BlurHash
 {
     /**
      * RGB value to linear map.
@@ -13,9 +17,9 @@ final class BlurHash
      * Function calls and math calculation is expensive.
      * Thus, we hard code all possible transfer value.
      *
-     * @var float[]
+     * @var array<int, float>
      */
-    protected static $rgbToLinearMap = [
+    protected static array $rgbToLinearMap = [
         0 => 0.0000,
         1 => 0.0003,
         2 => 0.0006,
@@ -277,45 +281,47 @@ final class BlurHash
     /**
      * @var int
      */
-    protected $componentX;
+    protected int $componentX;
 
     /**
      * @var int
      */
-    protected $componentY;
+    protected int $componentY;
 
     /**
      * @var int
      */
-    protected $imageWidth;
+    protected int $imageWidth;
 
     /**
      * @var int
      */
-    protected $imageHeight;
+    protected int $imageHeight;
 
     /**
      * BlurHash constructor.
      *
-     * @param int $componentX
-     * @param int $componentY
-     * @param int $resizedWidth
+     * @param  int  $componentX
+     * @param  int  $componentY
+     * @param  int  $resizedWidth
      */
-    public function __construct(int $componentX = 4, int $componentY = 3, int $resizedWidth = 64)
-    {
+    public function __construct(
+        int $componentX = 4,
+        int $componentY = 3,
+        int $resizedWidth = 64
+    ) {
         $this->setComponentX($componentX)
             ->setComponentY($componentY)
             ->setResizedImageMaxWidth($resizedWidth);
     }
 
     /**
-     * Encode an image to blurhash.
+     * Encode an image to blurhash string.
      *
-     * @param mixed $data
-     *
+     * @param  string|resource|Image|UploadedFile  $data
      * @return string
      */
-    public function encode($data): string
+    public function encode(mixed $data): string
     {
         $ac = $this->transform(
             $this->colors(
@@ -342,67 +348,162 @@ final class BlurHash
             $hash .= Base83::encode($quantised, 1);
         }
 
-        $hash .= Base83::encode(($this->toRGB($dc[0]) << 16) + ($this->toRGB($dc[1]) << 8) + $this->toRGB($dc[2]), 4);
+        $hash .= Base83::encode(($this->toSRGB($dc[0]) << 16) + ($this->toSRGB($dc[1]) << 8) + $this->toSRGB($dc[2]), 4);
 
         foreach ($ac as $factor) {
-            $hash .= Base83::encode(self::encodeAc($factor, $maximum), 2);
+            $hash .= Base83::encode(self::encodeAC($factor, $maximum), 2);
         }
 
         return $hash;
     }
 
     /**
+     * Decode a blurhash string to an Intervention image.
+     *
+     * @param  string  $blurhash
+     * @param  int  $width
+     * @param  int  $height
+     * @return Image
+     */
+    public function decode(string $blurhash, int $width, int $height): Image
+    {
+        $manager = new ImageManager(['driver' => 'gd']);
+
+        $image = $manager->canvas($width, $height);
+
+        $size = Base83::decode($blurhash[0]);
+
+        $sizeX = ($size % 9) + 1;
+
+        $sizeY = intval($size / 9) + 1;
+
+        $colors = [$this->toRGB(Base83::decode(substr($blurhash, 2, 4)))];
+
+        $maximum = (Base83::decode($blurhash[1]) + 1) / 166;
+
+        for ($i = 1, $total = $sizeX * $sizeY; $i < $total; ++$i) {
+            $value = Base83::decode(substr($blurhash, $i * 2 + 4, 2));
+
+            $colors[$i] = $this->decodeAC($value, $maximum);
+        }
+
+        for ($y = 0; $y < $height; ++$y) {
+            for ($x = 0; $x < $width; ++$x) {
+                $r = $g = $b = 0;
+
+                $piXWidth = M_PI * $x / $width;
+                $piYHeight = M_PI * $y / $height;
+
+                for ($j = 0; $j < $sizeY; ++$j) {
+                    $cosHeight = cos($piYHeight * $j);
+
+                    $sizeXJ = $j * $sizeX;
+
+                    for ($i = 0; $i < $sizeX; ++$i) {
+                        $color = $colors[$i + $sizeXJ];
+
+                        $basis = cos($piXWidth * $i) * $cosHeight;
+
+                        $r += $color[0] * $basis;
+                        $g += $color[1] * $basis;
+                        $b += $color[2] * $basis;
+                    }
+                }
+
+                $image->pixel([$this->toSRGB($r), $this->toSRGB($g), $this->toSRGB($b)], $x, $y);
+            }
+        }
+
+        return $image;
+    }
+
+    /**
      * Get resized image resource.
      *
-     * @param mixed $data
-     *
-     * @return resource
+     * @param  string|resource|Image|UploadedFile  $data
+     * @return GdImage
      */
-    protected function image($data)
+    protected function image(mixed $data): GdImage
     {
-        $image = (new ImageManager(['driver' => 'gd']))
-            ->make($data)
-            ->widen($this->imageWidth, function (Constraint $constraint) {
+        $manager = new ImageManager(['driver' => 'gd']);
+
+        $image = $manager->make($data);
+
+        $image->resize(
+            $this->imageWidth,
+            null,
+            function (Constraint $constraint) {
+                $constraint->aspectRatio();
                 $constraint->upsize();
-            });
+            }
+        );
 
         $this->imageWidth = $image->width();
 
         $this->imageHeight = $image->height();
 
-        return $image->getCore();
+        $gd = $image->getCore();
+
+        if (!($gd instanceof GdImage)) {
+            throw new RuntimeException(
+                'Something went wrong when getting GD resource.'
+            );
+        }
+
+        return $gd;
     }
 
     /**
      * Get image colors for every pixel.
      *
-     * @param resource $resource
-     *
-     * @return array<array<array<float>>>
+     * @param  GdImage  $image
+     * @return array<int, array<int, array<int, float>>>
      */
-    protected function colors($resource): array
+    protected function colors(GdImage $image): array
     {
         $colors = [];
+
+        $cache = [];
+
+        $isTrueColor = imageistruecolor($image);
 
         for ($x = 0; $x < $this->imageWidth; ++$x) {
             $colors[$x] = [];
 
             for ($y = 0; $y < $this->imageHeight; ++$y) {
-                /*
-                 * Use imagecolorsforindex will be slower than binary operation.
-                 *
-                 * https://www.php.net/manual/en/function.imagecolorsforindex.php#79459
-                 * https://www.php.net/manual/en/function.imagecolorat.php#example-3799
-                 */
+                $rgb = imagecolorat($image, $x, $y);
 
-                /** @phpstan-ignore-next-line */
-                $rgb = imagecolorat($resource, $x, $y);
+                if ($rgb === false) {
+                    throw new RuntimeException(
+                        sprintf(
+                            'Something went wrong when getting image color at x: %d, y: %d.',
+                            $x,
+                            $y,
+                        )
+                    );
+                }
 
-                $colors[$x][$y] = [
-                    self::$rgbToLinearMap[($rgb >> 16) & 0xFF],
-                    self::$rgbToLinearMap[($rgb >> 8) & 0xFF],
-                    self::$rgbToLinearMap[$rgb & 0xFF],
-                ];
+                if (!isset($cache[$rgb])) {
+                    if ($isTrueColor) {
+                        $red = ($rgb >> 16) & 0xFF;
+                        $green = ($rgb >> 8) & 0xFF;
+                        $blue = $rgb & 0xFF;
+                    } else {
+                        [
+                            'red'   => $red,
+                            'green' => $green,
+                            'blue'  => $blue,
+                        ] = imagecolorsforindex($image, $rgb);
+                    }
+
+                    $cache[$rgb] = [
+                        self::$rgbToLinearMap[$red],
+                        self::$rgbToLinearMap[$green],
+                        self::$rgbToLinearMap[$blue],
+                    ];
+                }
+
+                $colors[$x][$y] = $cache[$rgb];
             }
         }
 
@@ -412,11 +513,10 @@ final class BlurHash
     /**
      * Magic transform function.
      *
-     * I don't know the meaning of math calculation.
+     * I don't know the meaning of the math calculation.
      *
-     * @param array<array<array<float>>> $colors
-     *
-     * @return array<array<float>>
+     * @param  array<int, array<int, array<int, float>>>  $colors
+     * @return array<int, array<int, float>>
      */
     protected function transform(array $colors): array
     {
@@ -448,7 +548,11 @@ final class BlurHash
                     }
                 }
 
-                $factors[] = [$r * $scale, $g * $scale, $b * $scale];
+                $factors[] = [
+                    round($r * $scale, 7),
+                    round($g * $scale, 7),
+                    round($b * $scale, 7),
+                ];
             }
         }
 
@@ -456,13 +560,27 @@ final class BlurHash
     }
 
     /**
-     * Convert linear to RGB.
-     *
-     * @param float $value
-     *
+     * @param  int  $value
+     * @return array<int, float>
+     */
+    protected function toRGB(int $value): array
+    {
+        $r = ($value >> 16) & 0xFF;
+        $g = ($value >> 8) & 0xFF;
+        $b = $value & 0xFF;
+
+        return [
+            self::$rgbToLinearMap[$r],
+            self::$rgbToLinearMap[$g],
+            self::$rgbToLinearMap[$b],
+        ];
+    }
+
+    /**
+     * @param  float  $value
      * @return int
      */
-    protected function toRGB(float $value): int
+    protected function toSRGB(float $value): int
     {
         $value = max(0, min(1, $value));
 
@@ -472,47 +590,70 @@ final class BlurHash
             $value = (1.055 * pow($value, 1 / 2.4) - 0.055) * 255 + 0.5;
         }
 
-        return intval(round($value));
+        return intval($value);
     }
 
     /**
      * Encode ac factor.
      *
-     * @param array<float> $color
-     * @param float $max
-     *
+     * @param  array<int, float>  $color
+     * @param  float  $max
      * @return int
      */
-    protected function encodeAc(array $color, float $max): int
+    protected function encodeAC(array $color, float $max): int
     {
-        $r = $this->pow($color[0] / $max);
+        $r = $this->quantise($this->pow($color[0] / $max, 0.5));
 
-        $g = $this->pow($color[1] / $max);
+        $g = $this->quantise($this->pow($color[1] / $max, 0.5));
 
-        $b = $this->pow($color[2] / $max);
+        $b = $this->quantise($this->pow($color[2] / $max, 0.5));
 
         return $r * 19 * 19 + $g * 19 + $b;
     }
 
     /**
-     * Magic pow function.
-     *
-     * @param float $value
-     *
+     * @param  int  $value
+     * @param  float  $max
+     * @return array<int, float>
+     */
+    protected function decodeAC(int $value, float $max): array
+    {
+        $r = intval($value / (19 * 19));
+
+        $g = intval($value / 19) % 19;
+
+        $b = $value % 19;
+
+        return [
+            $this->pow(($r - 9) / 9, 2) * $max,
+            $this->pow(($g - 9) / 9, 2) * $max,
+            $this->pow(($b - 9) / 9, 2) * $max,
+        ];
+    }
+
+    /**
+     * @param  float  $value
      * @return int
      */
-    protected function pow(float $value): int
+    protected function quantise(float $value): int
     {
-        $pow = ($value < 0 ? -1 : 1) * pow(abs($value), 0.5);
+        return max(0, min(18, intval($value * 9 + 9.5)));
+    }
 
-        return max(0, min(18, intval($pow * 9 + 9.5)));
+    /**
+     * @param  float  $value
+     * @param  float  $exp
+     * @return float
+     */
+    protected function pow(float $value, float $exp): float
+    {
+        return ($value < 0 ? -1 : 1) * pow(abs($value), $exp);
     }
 
     /**
      * Set component x.
      *
-     * @param int $componentX
-     *
+     * @param  int  $componentX
      * @return BlurHash
      */
     public function setComponentX(int $componentX): self
@@ -525,8 +666,7 @@ final class BlurHash
     /**
      * Set component y.
      *
-     * @param int $componentY
-     *
+     * @param  int  $componentY
      * @return BlurHash
      */
     public function setComponentY(int $componentY): self
@@ -539,8 +679,7 @@ final class BlurHash
     /**
      * Restrict component value between 1 and 9.
      *
-     * @param int $value
-     *
+     * @param  int  $value
      * @return int
      */
     protected function normalizeComponent(int $value): int
@@ -551,8 +690,7 @@ final class BlurHash
     /**
      * Set resized image max width.
      *
-     * @param int $imageWidth
-     *
+     * @param  int  $imageWidth
      * @return BlurHash
      */
     public function setResizedImageMaxWidth(int $imageWidth): self

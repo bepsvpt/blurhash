@@ -12,7 +12,7 @@ class BlurHashServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         if ($this->app instanceof Application) {
             $this->bootLumen();
@@ -26,7 +26,7 @@ class BlurHashServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function bootLaravel()
+    protected function bootLaravel(): void
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
@@ -40,7 +40,7 @@ class BlurHashServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function bootLumen()
+    protected function bootLumen(): void
     {
         $this->app->configure('blurhash');
     }
@@ -50,7 +50,7 @@ class BlurHashServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->mergeConfigFrom($this->configPath(), 'blurhash');
 

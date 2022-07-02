@@ -1,6 +1,6 @@
 # BlurHash
 
-[![Actions Status](https://github.com/bepsvpt/blurhash/workflows/Laravel/badge.svg)](https://github.com/bepsvpt/blurhash/actions)
+[![Testing](https://github.com/bepsvpt/blurhash/actions/workflows/testing.yml/badge.svg)](https://github.com/bepsvpt/blurhash/actions/workflows/testing.yml)
 [![Latest Stable Version](https://poser.pugx.org/bepsvpt/blurhash/v/stable)](https://packagist.org/packages/bepsvpt/blurhash)
 [![Total Downloads](https://poser.pugx.org/bepsvpt/blurhash/downloads)](https://packagist.org/packages/bepsvpt/blurhash)
 [![License](https://poser.pugx.org/bepsvpt/blurhash/license)](https://packagist.org/packages/bepsvpt/blurhash)
@@ -15,11 +15,11 @@ BlurHash is a compact representation of a placeholder for an image.
 
 ## Version
 
-1.0.1
+2.0.0
 
 ## Supported Laravel Version
 
-6.0 ~ 9.x
+8.0 ~ 9.x
 
 ## Installation
 
@@ -35,7 +35,7 @@ Publish config file
 php artisan vendor:publish --provider="Bepsvpt\Blurhash\BlurHashServiceProvider"
 ```
 
-Set up config file config/blurhash.php
+Set up config file on config/blurhash.php
 
 Done!
 
@@ -47,7 +47,7 @@ Done!
 BlurHash::encode($file);
 ```
 
-`$file` can be any [Intervention make method](http://image.intervention.io/api/make) acceptable source.
+`$file` can be any [Intervention make method](https://image.intervention.io/v2/api/make) acceptable source.
 
 ### app helper function
 
