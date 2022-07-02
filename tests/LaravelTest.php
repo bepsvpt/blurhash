@@ -36,8 +36,7 @@ class LaravelTest extends TestCase
     {
         $this->assertSame(
             match (PHP_OS_FAMILY) {
-                'Darwin' => 'LITbcr$*hK%g%2j[e.jZhef6d=g3',
-                'Windows' => 'LITbcr$*hK%g%2j[e.jZhef6d=g3',
+                'Darwin', 'Windows' => 'LITbcr$*hK%g%2j[e.jZhef6d=g3',
                 default => 'LITR{4$*hK%g%2j[e.jZhef6d=g3',
             },
             BlurHash::encode(__DIR__ . '/images/5.png')
