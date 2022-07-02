@@ -1,6 +1,6 @@
 # BlurHash
 
-[![Actions Status](https://github.com/bepsvpt/blurhash/workflows/Laravel/badge.svg)](https://github.com/bepsvpt/blurhash/actions)
+[![Testing](https://github.com/bepsvpt/blurhash/actions/workflows/testing.yml/badge.svg)](https://github.com/bepsvpt/blurhash/actions/workflows/testing.yml)
 [![Latest Stable Version](https://poser.pugx.org/bepsvpt/blurhash/v/stable)](https://packagist.org/packages/bepsvpt/blurhash)
 [![Total Downloads](https://poser.pugx.org/bepsvpt/blurhash/downloads)](https://packagist.org/packages/bepsvpt/blurhash)
 [![License](https://poser.pugx.org/bepsvpt/blurhash/license)](https://packagist.org/packages/bepsvpt/blurhash)
