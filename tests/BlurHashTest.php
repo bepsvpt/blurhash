@@ -49,7 +49,7 @@ class BlurHashTest extends TestCase
         $this->assertSame(
             match (PHP_OS_FAMILY) {
                 'Darwin', 'Windows' => '|CTQ_c*|f+-Vg$*|dC-Vd=+HkWdCi_g3kqeTi_gNhedpgNg$fkg3f+gNh0.8h}e.ich0icg3iwd=g$enghghgNeng$g3en.SjFe.i_eSkqghk=fkhKeng3ghf+ghgNe9dq-;kCe.i_h0lngNk=g3enghf6gNe9eTgNg$g3',
-                default => '|9OxXq|HkW#-F_:Ql:-U+^00tl:6RPNGpIv~R5Xm7|*|pIT{M{4.W;k=Gt00*|RPQ-L1#8NGrq#8BTaJt,cYI:xaKiIoiw00xaRPR5VEELO?PAWBG[xGo}O?tRFwS~#S:+00xuRPVYL1C6J7FJIo^+pcofOXQ-rXJRPAx]',
+                default => '|9On@3|HkW#-F_:Ql:-U+^00tl:6RPNGpIv~R5Xm7|*|pIT{M{4.W;k=Gt00*|RPQ-L1#8NGrq#8BTaJt,cYI:xaKiIoiw00xaRPR5VEELO?PAWBG[xGo}O?tRFwS~#S:+00xuRPVYL1C6J7FJIo^+pcofOXQ-rXJRPAx]',
             },
             (new BlurHash(9, 9))->encode(__DIR__ . '/images/3.png')
         );
@@ -82,7 +82,7 @@ class BlurHashTest extends TestCase
         $this->assertSame(
             match (PHP_OS_FAMILY) {
                 'Darwin', 'Windows' => 'L*TOwtxaeTxu?^kCf6kWhKe.enf6',
-                default => 'L$TOqdxue9xu?^kCe.kWhKe.eTfk',
+                default => 'L$TOqcxue9xu?^kCe.kWhKe.eTfk',
             },
             $hash->encode(__DIR__ . '/images/4.png')
         );
