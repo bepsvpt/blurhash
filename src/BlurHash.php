@@ -490,9 +490,9 @@ class BlurHash
                         $blue = $rgb & 0xFF;
                     } else {
                         [
-                            'red'   => $red,
+                            'red' => $red,
                             'green' => $green,
-                            'blue'  => $blue,
+                            'blue' => $blue,
                         ] = imagecolorsforindex($image, $rgb);
                     }
 
