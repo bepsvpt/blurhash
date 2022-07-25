@@ -35,10 +35,7 @@ class LaravelTest extends TestCase
 
     public function testPackageLoaded(): void
     {
-        $hash = match (PHP_OS_FAMILY) {
-            'Darwin', 'Windows' => 'LITR[|$*hK%g%2j[e.jZhef6d=g3',
-            default => 'LITR[|$*hK%g%2j[e.jZhef6d=g3',
-        };
+        $hash = 'LITR[|$*hK%g%2j[e.jZhef6d=g3';
 
         $this->assertSame(
             $hash,
