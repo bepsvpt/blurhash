@@ -2,6 +2,9 @@
 
 ## 2.x
 
+- 2.1.0 (2023-02-07)
+  - Support Laravel 10
+
 - 2.0.0 (2022-07-02)
   - Support decode from blurhash string
   - Drop Laravel 6 and 7
