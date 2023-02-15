@@ -278,32 +278,16 @@ class BlurHash
         255 => 1.0000,
     ];
 
-    /**
-     * @var int
-     */
     protected int $componentX;
 
-    /**
-     * @var int
-     */
     protected int $componentY;
 
-    /**
-     * @var int
-     */
     protected int $imageWidth;
 
-    /**
-     * @var int
-     */
     protected int $imageHeight;
 
     /**
      * BlurHash constructor.
-     *
-     * @param  int  $componentX
-     * @param  int  $componentY
-     * @param  int  $resizedWidth
      */
     public function __construct(
         int $componentX = 4,
@@ -319,7 +303,6 @@ class BlurHash
      * Encode an image to blurhash string.
      *
      * @param  string|resource|Image|UploadedFile  $data
-     * @return string
      */
     public function encode(mixed $data): string
     {
@@ -359,11 +342,6 @@ class BlurHash
 
     /**
      * Decode a blurhash string to an Intervention image.
-     *
-     * @param  string  $blurhash
-     * @param  int  $width
-     * @param  int  $height
-     * @return Image
      */
     public function decode(string $blurhash, int $width, int $height): Image
     {
@@ -421,7 +399,6 @@ class BlurHash
      * Get resized image resource.
      *
      * @param  string|resource|Image|UploadedFile  $data
-     * @return GdImage
      */
     protected function image(mixed $data): GdImage
     {
@@ -456,7 +433,6 @@ class BlurHash
     /**
      * Get image colors for every pixel.
      *
-     * @param  GdImage  $image
      * @return array<int, array<int, array<int, float>>>
      */
     protected function colors(GdImage $image): array
@@ -560,7 +536,6 @@ class BlurHash
     }
 
     /**
-     * @param  int  $value
      * @return array<int, float>
      */
     protected function toRGB(int $value): array
@@ -576,10 +551,6 @@ class BlurHash
         ];
     }
 
-    /**
-     * @param  float  $value
-     * @return int
-     */
     protected function toSRGB(float $value): int
     {
         $value = max(0, min(1, $value));
@@ -597,8 +568,6 @@ class BlurHash
      * Encode ac factor.
      *
      * @param  array<int, float>  $color
-     * @param  float  $max
-     * @return int
      */
     protected function encodeAC(array $color, float $max): int
     {
@@ -612,8 +581,6 @@ class BlurHash
     }
 
     /**
-     * @param  int  $value
-     * @param  float  $max
      * @return array<int, float>
      */
     protected function decodeAC(int $value, float $max): array
@@ -631,20 +598,11 @@ class BlurHash
         ];
     }
 
-    /**
-     * @param  float  $value
-     * @return int
-     */
     protected function quantise(float $value): int
     {
         return max(0, min(18, intval($value * 9 + 9.5)));
     }
 
-    /**
-     * @param  float  $value
-     * @param  float  $exp
-     * @return float
-     */
     protected function pow(float $value, float $exp): float
     {
         return ($value < 0 ? -1 : 1) * pow(abs($value), $exp);
@@ -652,9 +610,6 @@ class BlurHash
 
     /**
      * Set component x.
-     *
-     * @param  int  $componentX
-     * @return BlurHash
      */
     public function setComponentX(int $componentX): self
     {
@@ -665,9 +620,6 @@ class BlurHash
 
     /**
      * Set component y.
-     *
-     * @param  int  $componentY
-     * @return BlurHash
      */
     public function setComponentY(int $componentY): self
     {
@@ -678,9 +630,6 @@ class BlurHash
 
     /**
      * Restrict component value between 1 and 9.
-     *
-     * @param  int  $value
-     * @return int
      */
     protected function normalizeComponent(int $value): int
     {
@@ -689,9 +638,6 @@ class BlurHash
 
     /**
      * Set resized image max width.
-     *
-     * @param  int  $imageWidth
-     * @return BlurHash
      */
     public function setResizedImageMaxWidth(int $imageWidth): self
     {

@@ -43,10 +43,6 @@ class Base83
 
     /**
      * Encode an integer to string.
-     *
-     * @param  int  $value
-     * @param  int  $length
-     * @return string
      */
     public static function encode(int $value, int $length): string
     {
@@ -65,9 +61,6 @@ class Base83
 
     /**
      * Decode a string to integer.
-     *
-     * @param  string  $encoded
-     * @return int
      */
     public static function decode(string $encoded): int
     {

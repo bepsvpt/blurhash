@@ -9,8 +9,6 @@ class BlurHashServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application events.
-     *
-     * @return void
      */
     public function boot(): void
     {
@@ -23,8 +21,6 @@ class BlurHashServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap laravel application events.
-     *
-     * @return void
      */
     protected function bootLaravel(): void
     {
@@ -37,8 +33,6 @@ class BlurHashServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap lumen application events.
-     *
-     * @return void
      */
     protected function bootLumen(): void
     {
@@ -47,8 +41,6 @@ class BlurHashServiceProvider extends ServiceProvider
 
     /**
      * Register the service provider.
-     *
-     * @return void
      */
     public function register(): void
     {
@@ -67,8 +59,6 @@ class BlurHashServiceProvider extends ServiceProvider
 
     /**
      * Get config file path.
-     *
-     * @return string
      */
     protected function configPath(): string
     {
