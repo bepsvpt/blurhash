@@ -353,7 +353,7 @@ class BlurHash
 
         $sizeX = ($size % 9) + 1;
 
-        $sizeY = intval($size / 9) + 1;
+        $sizeY = intdiv($size, 9) + 1;
 
         $colors = [$this->toRGB(Base83::decode(substr($blurhash, 2, 4)))];
 
@@ -585,9 +585,9 @@ class BlurHash
      */
     protected function decodeAC(int $value, float $max): array
     {
-        $r = intval($value / (19 * 19));
+        $r = intdiv($value, 19 * 19);
 
-        $g = intval($value / 19) % 19;
+        $g = intdiv($value, 19) % 19;
 
         $b = $value % 19;
 
