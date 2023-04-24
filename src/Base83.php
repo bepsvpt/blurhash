@@ -51,7 +51,7 @@ class Base83
         $result = '';
 
         for ($i = 1; $i <= $length; ++$i) {
-            $digit = intval($value / $powOf83[$length - $i]) % 83;
+            $digit = intdiv($value, $powOf83[$length - $i]) % 83;
 
             $result .= self::$characters[$digit];
         }
