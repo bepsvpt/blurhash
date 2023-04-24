@@ -2,6 +2,9 @@
 
 ## 2.x
 
+- 2.1.1 (2023-04-24)
+  - Use `intdiv()` instead of float div + int cast ([#6](https://github.com/bepsvpt/blurhash/pull/6))
+
 - 2.1.0 (2023-02-07)
   - Support Laravel 10
 
