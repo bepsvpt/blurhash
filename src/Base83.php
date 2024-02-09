@@ -21,7 +21,7 @@ class Base83
     /**
      * Base 63 encoder/decoder character index map.
      *
-     * @var array<int|string, int>
+     * @var array<int|string, int<0, 82>>
      */
     protected static array $indexMap = [
         '0' => 0, '1' => 1, '2' => 2, '3' => 3, '4' => 4,
@@ -46,17 +46,13 @@ class Base83
      */
     public static function encode(int $value, int $length): string
     {
-        static $powOf83 = [1, 83, 6889, 571787, 47458321];
+        $powOf83 = [1, 83, 6889, 571787, 47458321];
 
-        $result = '';
-
-        for ($i = 1; $i <= $length; ++$i) {
-            $digit = intdiv($value, $powOf83[$length - $i]) % 83;
-
-            $result .= self::$characters[$digit];
-        }
-
-        return $result;
+        return array_reduce(
+            range($length - 1, 0),
+            fn (string $carry, int $idx) => $carry.self::$characters[intdiv($value, $powOf83[$idx]) % 83],
+            '',
+        );
     }
 
     /**
@@ -64,12 +60,10 @@ class Base83
      */
     public static function decode(string $encoded): int
     {
-        $result = 0;
-
-        foreach (str_split($encoded) as $char) {
-            $result = $result * 83 + static::$indexMap[$char];
-        }
-
-        return $result;
+        return array_reduce(
+            str_split($encoded),
+            fn (int $carry, string $char) => $carry * 83 + static::$indexMap[$char],
+            0,
+        );
     }
 }

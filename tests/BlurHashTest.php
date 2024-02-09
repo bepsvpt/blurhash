@@ -3,81 +3,266 @@
 namespace Bepsvpt\Blurhash\Tests;
 
 use Bepsvpt\Blurhash\BlurHash;
-use PHPUnit\Framework\TestCase;
+use Bepsvpt\Blurhash\Facades\BlurHash as BlurHashFacade;
+use FFI\ParserException;
+use GdImage;
+use Imagick;
+use Jcupitt\Vips\Image;
+use Orchestra\Testbench\Concerns\WithWorkbench;
+use Orchestra\Testbench\TestCase;
 
 class BlurHashTest extends TestCase
 {
-    public function testEncode(): void
+    use WithWorkbench;
+
+    protected function file(string $name): string
     {
-        $hash = new BlurHash();
+        return __DIR__.'/images/'.$name;
+    }
+
+    public function testGdDriverEncode(): void
+    {
+        $path = $this->file('01.jpg');
+
+        $blurhash = new BlurHash('gd');
 
         $this->assertSame(
-            'LNTRThv}hKx]wJj[eTjZheeneTgh',
-            $hash->encode(__DIR__ . '/images/1.png')
+            'L8Am^~jG00xu_NR*4TtQ.8R%IUkD',
+            $blurhash->encode($path),
+        );
+
+        $blurhash->setMaxSize(256);
+
+        $this->assertSame(
+            'L7A^j{V@00%M_NRj4Txu.8RjIUkD',
+            $blurhash->encode($path),
+        );
+
+        $blurhash->setMaxSize(128);
+
+        $blurhash->setComponentX(9);
+
+        $blurhash->setComponentY(5);
+
+        $this->assertSame(
+            'iDA-0Mae00xu_NIU4nxu?b.8WBDit7-;RjIUt7xu%MWBM{kCo0j[s;aeRjRPjZofjZkBkCaxjsWB%gj]M{jZt7WWWBoJkC',
+            $blurhash->encode($path),
+        );
+    }
+
+    public function testImagickDriverEncode(): void
+    {
+        $path = $this->file('01.jpg');
+
+        $blurhash = new BlurHash('imagick');
+
+        $this->assertSame(
+            'L7BND]jF00x]_NRj4Txt.8RjIUo#',
+            $blurhash->encode($path),
+        );
+
+        $blurhash->setMaxSize(256);
+
+        $this->assertSame(
+            'L7BDsRVt00%M_NRj4Txu.8RjIUkD',
+            $blurhash->encode($path),
+        );
+
+        $blurhash->setMaxSize(128);
+
+        $blurhash->setComponentX(9);
+
+        $blurhash->setComponentY(5);
+
+        $hash = match (PHP_OS_FAMILY) {
+            'Darwin' => 'iDBND^ae00xu~qIU4nx]?b.8WB9Ft7-;RjIUt6xu%MWBM{kCjYj[s;WBRjRPjYofjZfkkCf5jZWB%gkCM{aeozbIWBjZfk',
+            default => 'iDBND^ae00xu~qIU4nx]?b.8WB9Ft7-;RjIUt6xu%MWBM{kCjYj[s;WBRjRPjYoyjZfkkCf5jZWB%gkCM{aeozbIWBjZfk',
+        };
+
+        $this->assertSame($hash, $blurhash->encode($path));
+    }
+
+    public function testPhpVipsDriverEncode(): void
+    {
+        $path = $this->file('01.jpg');
+
+        $blurhash = new BlurHash('php-vips');
+
+        try {
+            $this->assertSame(
+                'L8AwbmjG00xu_NR*4TtQ.8R%IUkD',
+                $blurhash->encode($path),
+            );
+        } catch (ParserException) { // @phpstan-ignore-line
+            $this->markTestSkipped();
+        }
+
+        $blurhash->setMaxSize(256);
+
+        $this->assertSame(
+            'L7B45kV@00%M_NRj4Txu.8RjIUkD',
+            $blurhash->encode($path),
+        );
+
+        $blurhash->setMaxSize(128);
+
+        $blurhash->setComponentX(9);
+
+        $blurhash->setComponentY(5);
+
+        $hash = match (PHP_OS_FAMILY) {
+            'Darwin' => 'iDA-0Mae00xu_NIU4nxu?b.8WBDit7-;RjIUt7xu%MWBM{kCo0j[s;aeRjRPjZofjZkBkCaxjsWB%gj]M{jZt7WVWBoKkC',
+            default => 'iDA-0Nae00xu_NIU4nxu?b.8WB9Ft7-;RjIUt7xu%MWBM{kCjsj[s;aeRjRPjZofjZkCkCaxjsWB%gj]M{jZt7WVWBoKkC',
+        };
+
+        $this->assertSame(
+            $hash,
+            $blurhash->encode($path),
+        );
+    }
+
+    public function testDifferentFormatsEncode(): void
+    {
+        $hash = new BlurHash('gd');
+
+        $this->assertSame(
+            'LdIiLaD+%Mt75xIUoHWBR2oIV=WB',
+            $hash->encode($this->file('02.gif'))
+        );
+
+        $this->assertSame(
+            'L8Am^~jG00xu_NR*4TtQ.8R%IUkD',
+            $hash->encode($this->file('03.png'))
+        );
+
+        $this->assertSame(
+            'L8Am^~jG00xu_NR*4TtQ.8R%IUkD',
+            $hash->encode($this->file('04.webp'))
         );
 
         $this->assertSame(
             'LvTQfPrXe9rr%Miwenj[hee9ene.',
-            $hash->encode(__DIR__ . '/images/2.png')
+            $hash->encode($this->file('06.png'))
+        );
+
+        $hash = match (PHP_OS_FAMILY) {
+            'Darwin' => 'LXTRc+xGd=wJ.8i^enj]hee9e.f6',
+            default => 'LYTRZxs:d=r?.8i_enkChee9e.f6',
+        };
+
+        $this->assertSame(
+            $hash,
+            (new BlurHash('imagick'))->encode($this->file('06.png'))
+        );
+
+        $hash = match (PHP_OS_FAMILY) {
+            'Darwin' => 'LeTRKIsAe9sT-;i_enkChee9ene.',
+            default => 'LdTRKIs9e9sA-;i_enkChee9ene.',
+        };
+
+        try {
+            $this->assertSame(
+                $hash,
+                (new BlurHash('php-vips'))->encode($this->file('06.png'))
+            );
+        } catch (ParserException) {
+            // ignored
+        }
+    }
+
+    /**
+     * @requires PHP >= 8.1.0
+     */
+    public function testAvifFormatEncode(): void
+    {
+        $hash = new BlurHash('gd');
+
+        $this->assertSame(
+            'L8Am^~jG00xu_NR*4TtQ.8R%IUkD',
+            $hash->encode($this->file('05.avif'))
         );
     }
 
-    public function testEncodeDifferentComponents(): void
+    public function testGdDriverDecode(): void
     {
-        $this->assertSame(
-            'LCTQ_c*|f+-V+HkWdCi_hedpgNg$',
-            (new BlurHash())->encode(__DIR__ . '/images/3.png')
+        $image = (new BlurHash('gd'))->decode(
+            'rDBDsRV@00xu_NIU4nx]?b.8WBDit7-;RjIUxaxux]WBM{kCjZj[s;WBRjRPjZofjZkBkCaxjZWB%gkCM{jZt7WCWBj?j[Mxj[kCa|kCoLj[WBR*',
+            300,
+            200,
         );
 
-        $this->assertSame(
-            '00TQ_c',
-            (new BlurHash(1, 1))->encode(__DIR__ . '/images/3.png')
+        $this->assertInstanceOf(GdImage::class, $image);
+
+        $fp = tmpfile();
+
+        $this->assertIsResource($fp);
+
+        imagejpeg($image, $fp);
+
+        $path = stream_get_meta_data($fp)['uri'];
+
+        $this->assertSame(md5_file($this->file('10.jpg')), md5_file($path));
+    }
+
+    public function testImagickDriverDecode(): void
+    {
+        $image = (new BlurHash('imagick'))->decode(
+            'rDBDsRV@00xu_NIU4nx]?b.8WBDit7-;RjIUxaxux]WBM{kCjZj[s;WBRjRPjZofjZkBkCaxjZWB%gkCM{jZt7WCWBj?j[Mxj[kCa|kCoLj[WBR*',
+            300,
+            200,
         );
 
+        $this->assertInstanceOf(Imagick::class, $image);
+
+        $fp = tmpfile();
+
+        $this->assertIsResource($fp);
+
+        $path = stream_get_meta_data($fp)['uri'];
+
+        $this->assertTrue($image->writeImage('jpg:'.$path));
+
+        $hash = match (PHP_OS_FAMILY) {
+            'Darwin' => md5_file($this->file('11.jpg')),
+            default => '305ada74d76f6ed94ad743659abe2a29',
+        };
+
+        $this->assertSame($hash, md5_file($path));
+    }
+
+    public function testPhpVipsDriverDecode(): void
+    {
+        try {
+            $image = (new BlurHash('php-vips'))->decode(
+                'rDBDsRV@00xu_NIU4nx]?b.8WBDit7-;RjIUxaxux]WBM{kCjZj[s;WBRjRPjZofjZkBkCaxjZWB%gkCM{jZt7WCWBj?j[Mxj[kCa|kCoLj[WBR*',
+                300,
+                200,
+            );
+        } catch (ParserException) { // @phpstan-ignore-line
+            $this->markTestSkipped();
+        }
+
+        $this->assertInstanceOf(Image::class, $image);
+
+        $fp = tmpfile();
+
+        $this->assertIsResource($fp);
+
+        $path = stream_get_meta_data($fp)['uri'];
+
+        $image->jpegsave($path);
+
         $this->assertSame(
-            '|CTQ_c*|f+-Vg$*|dC-Vd=+HkWdCi_g3kqeTi_gNhedpgNg$fkg3f+gNh0.8h}e.ich0icg3iwd=g$enghghgNeng$g3en.SjFe.i_eSkqghk=fkhKeng3ghf+ghgNe9dq-;kCe.i_h0lngNk=g3enghf6gNe9eTgNg$g3',
-            (new BlurHash(9, 9))->encode(__DIR__ . '/images/3.png')
+            md5_file($this->file('12.jpg')),
+            md5_file($path),
         );
     }
 
-    public function testEncodeDifferentImageWidth(): void
+    public function testLaravelFacade(): void
     {
-        $hash = new BlurHash();
-
         $this->assertSame(
-            'LxTP#UtRe9t7*Jj[f6kCh0enene.',
-            $hash->encode(__DIR__ . '/images/4.png')
-        );
-
-        $hash->setResizedImageMaxWidth(48);
-
-        $this->assertSame(
-            'LyTPVWtRe.t7.mkCfkkWh0enene.',
-            $hash->encode(__DIR__ . '/images/4.png')
-        );
-
-        $hash->setResizedImageMaxWidth(32);
-
-        $this->assertSame(
-            'L*TOwtxaeTxu?^kCf6kWhKe.enf6',
-            $hash->encode(__DIR__ . '/images/4.png')
-        );
-
-        $hash->setResizedImageMaxWidth(96);
-
-        $this->assertSame(
-            'LrTQ13ozeTo}*Jfkf6f+h0enemen',
-            $hash->encode(__DIR__ . '/images/4.png')
-        );
-    }
-
-    public function testEncodeWithGifFormat(): void
-    {
-        $hash = new BlurHash();
-
-        $this->assertSame(
-            'LdIiLaD+%Mt75xIUoHWBR2oIV=WB',
-            $hash->encode(__DIR__ . '/images/6.gif')
+            'L8Am^~jG00xu_NR*4TtQ.8R%IUkD',
+            BlurHashFacade::encode($this->file('01.jpg')),
         );
     }
 }

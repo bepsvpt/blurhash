@@ -3,14 +3,22 @@
 return [
 
     /*
-     * Components picked from image x and y axis.
+     * The image driver is used for encoding and decoding blurhash.
      *
-     * The more components you pick, the more information
-     * is retained in the placeholder, but the longer the
-     * BlurHash string will be. Also, it doesn't always
-     * look good with too many components.
+     * Supported drivers include "gd", "imagick", and "php-vips".
+     */
+
+    'driver' => 'gd',
+
+    /*
+     * Components are selected from the image's x and y axis.
      *
-     * Valid value is from 1 to 9.
+     * Choosing more components means the placeholder will
+     * retain more information, but it also makes the
+     * BlurHash string longer. However, having too many
+     * components doesn't always result in a better look.
+     *
+     * The valid range for values is from 1 to 9.
      */
 
     'components-x' => 4,
@@ -18,14 +26,11 @@ return [
     'components-y' => 3,
 
     /*
-     * Resize image max width.
-     *
-     * When encoding the image, image will resize to
-     * small one to optimize performance. It is not
-     * recommend to set the value larger than 256.
-     *
+     * When encoding the image, it will resize to a smaller
+     * version to enhance performance. It's not recommended
+     * to set the max width and height values larger than 256.
      */
 
-    'resized-image-max-width' => 64,
+    'resized-max-size' => 64,
 
 ];

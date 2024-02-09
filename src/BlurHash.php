@@ -2,24 +2,30 @@
 
 namespace Bepsvpt\Blurhash;
 
-use GdImage;
-use Intervention\Image\Constraint;
-use Intervention\Image\Image;
-use Intervention\Image\ImageManager;
-use RuntimeException;
+use Bepsvpt\Blurhash\Drivers\Driver;
+use Bepsvpt\Blurhash\Drivers\GdDriver;
+use Bepsvpt\Blurhash\Drivers\ImagickDriver;
+use Bepsvpt\Blurhash\Drivers\VipsDriver;
+use Bepsvpt\Blurhash\Exceptions\DriverNotFoundException;
+use Bepsvpt\Blurhash\Exceptions\UnableToCreateImageException;
+use Bepsvpt\Blurhash\Exceptions\UnableToGetColorException;
+use Bepsvpt\Blurhash\Exceptions\UnableToSetPixelException;
+use Imagick;
+use Jcupitt\Vips\Image;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class BlurHash
 {
     /**
-     * RGB value to linear map.
+     * RGB Value to Linear Map
      *
-     * Function calls and math calculation is expensive.
-     * Thus, we hard code all possible transfer value.
+     * Function calls and math calculations are costly in terms
+     *  of processing. Therefore, we've hard-coded all possible
+     *  transfer values to optimize performance.
      *
      * @var array<int, float>
      */
-    protected static array $rgbToLinearMap = [
+    public static array $rgbToLinearMap = [
         0 => 0.0000,
         1 => 0.0003,
         2 => 0.0006,
@@ -278,38 +284,57 @@ class BlurHash
         255 => 1.0000,
     ];
 
-    protected int $componentX;
-
-    protected int $componentY;
-
-    protected int $imageWidth;
-
-    protected int $imageHeight;
+    /**
+     * @var GdDriver|ImagickDriver|VipsDriver
+     */
+    public Driver $driver;
 
     /**
-     * BlurHash constructor.
+     * Create a new BlurHash instance.
+     *
+     * @param  'gd'|'imagick'|'php-vips'  $loader
+     * @param  int<1, 9>  $componentX
+     * @param  int<1, 9>  $componentY
+     * @param  positive-int  $maxSize
+     *
+     * @throws DriverNotFoundException
      */
     public function __construct(
-        int $componentX = 4,
-        int $componentY = 3,
-        int $resizedWidth = 64
+        string $loader = 'gd',
+        public int $componentX = 4,
+        public int $componentY = 3,
+        int $maxSize = 64
     ) {
-        $this->setComponentX($componentX)
-            ->setComponentY($componentY)
-            ->setResizedImageMaxWidth($resizedWidth);
+        $drivers = [
+            'gd' => GdDriver::class,
+            'imagick' => ImagickDriver::class,
+            'php-vips' => VipsDriver::class,
+        ];
+
+        if (! isset($drivers[$loader])) {
+            throw new DriverNotFoundException(
+                sprintf('"%s" is not a valid driver.', $loader),
+            );
+        }
+
+        $this->driver = new $drivers[$loader]($maxSize);
+
+        $this->setComponentX($componentX)->setComponentY($componentY);
     }
 
     /**
-     * Encode an image to blurhash string.
+     * Encode an image to BlurHash string.
      *
-     * @param  string|resource|Image|UploadedFile  $data
+     * @throws UnableToGetColorException
      */
-    public function encode(mixed $data): string
+    public function encode(UploadedFile|string $data): string
     {
+        if ($data instanceof UploadedFile) {
+            $data = $data->getPath();
+        }
+
         $ac = $this->transform(
-            $this->colors(
-                $this->image($data)
-            )
+            $this->driver->colors($data),
         );
 
         /** @var array<float> $dc */
@@ -319,7 +344,7 @@ class BlurHash
 
         $maximum = 1;
 
-        if (!count($ac)) {
+        if (! count($ac)) {
             $hash .= Base83::encode(0, 1);
         } else {
             $actual = max(array_map('max', $ac));
@@ -341,13 +366,17 @@ class BlurHash
     }
 
     /**
-     * Decode a blurhash string to an Intervention image.
+     * Decode a BlurHash string to an image instance.
+     *
+     * @param  positive-int  $width
+     * @param  positive-int  $height
+     *
+     * @throws UnableToSetPixelException
+     * @throws UnableToCreateImageException
      */
-    public function decode(string $blurhash, int $width, int $height): Image
+    public function decode(string $blurhash, int $width, int $height): object
     {
-        $manager = new ImageManager(['driver' => 'gd']);
-
-        $image = $manager->canvas($width, $height);
+        $this->driver->create($width, $height);
 
         $size = Base83::decode($blurhash[0]);
 
@@ -359,25 +388,26 @@ class BlurHash
 
         $maximum = (Base83::decode($blurhash[1]) + 1) / 166;
 
-        for ($i = 1, $total = $sizeX * $sizeY; $i < $total; ++$i) {
+        for ($i = 1, $total = $sizeX * $sizeY; $i < $total; $i++) {
             $value = Base83::decode(substr($blurhash, $i * 2 + 4, 2));
 
             $colors[$i] = $this->decodeAC($value, $maximum);
         }
 
-        for ($y = 0; $y < $height; ++$y) {
-            for ($x = 0; $x < $width; ++$x) {
+        for ($y = 0; $y < $height; $y++) {
+            for ($x = 0; $x < $width; $x++) {
                 $r = $g = $b = 0;
 
                 $piXWidth = M_PI * $x / $width;
+
                 $piYHeight = M_PI * $y / $height;
 
-                for ($j = 0; $j < $sizeY; ++$j) {
+                for ($j = 0; $j < $sizeY; $j++) {
                     $cosHeight = cos($piYHeight * $j);
 
                     $sizeXJ = $j * $sizeX;
 
-                    for ($i = 0; $i < $sizeX; ++$i) {
+                    for ($i = 0; $i < $sizeX; $i++) {
                         $color = $colors[$i + $sizeXJ];
 
                         $basis = cos($piXWidth * $i) * $cosHeight;
@@ -388,102 +418,11 @@ class BlurHash
                     }
                 }
 
-                $image->pixel([$this->toSRGB($r), $this->toSRGB($g), $this->toSRGB($b)], $x, $y);
+                $this->driver->pixel($x, $y, [$this->toSRGB($r), $this->toSRGB($g), $this->toSRGB($b)]);
             }
         }
 
-        return $image;
-    }
-
-    /**
-     * Get resized image resource.
-     *
-     * @param  string|resource|Image|UploadedFile  $data
-     */
-    protected function image(mixed $data): GdImage
-    {
-        $manager = new ImageManager(['driver' => 'gd']);
-
-        $image = $manager->make($data);
-
-        $image->resize(
-            $this->imageWidth,
-            null,
-            function (Constraint $constraint) {
-                $constraint->aspectRatio();
-                $constraint->upsize();
-            }
-        );
-
-        $this->imageWidth = $image->width();
-
-        $this->imageHeight = $image->height();
-
-        $gd = $image->getCore();
-
-        if (!($gd instanceof GdImage)) {
-            throw new RuntimeException(
-                'Something went wrong when getting GD resource.'
-            );
-        }
-
-        return $gd;
-    }
-
-    /**
-     * Get image colors for every pixel.
-     *
-     * @return array<int, array<int, array<int, float>>>
-     */
-    protected function colors(GdImage $image): array
-    {
-        $colors = [];
-
-        $cache = [];
-
-        $isTrueColor = imageistruecolor($image);
-
-        for ($x = 0; $x < $this->imageWidth; ++$x) {
-            $colors[$x] = [];
-
-            for ($y = 0; $y < $this->imageHeight; ++$y) {
-                $rgb = imagecolorat($image, $x, $y);
-
-                if ($rgb === false) {
-                    throw new RuntimeException(
-                        sprintf(
-                            'Something went wrong when getting image color at x: %d, y: %d.',
-                            $x,
-                            $y,
-                        )
-                    );
-                }
-
-                if (!isset($cache[$rgb])) {
-                    if ($isTrueColor) {
-                        $red = ($rgb >> 16) & 0xFF;
-                        $green = ($rgb >> 8) & 0xFF;
-                        $blue = $rgb & 0xFF;
-                    } else {
-                        [
-                            'red' => $red,
-                            'green' => $green,
-                            'blue' => $blue,
-                        ] = imagecolorsforindex($image, $rgb);
-                    }
-
-                    $cache[$rgb] = [
-                        self::$rgbToLinearMap[$red],
-                        self::$rgbToLinearMap[$green],
-                        self::$rgbToLinearMap[$blue],
-                    ];
-                }
-
-                $colors[$x][$y] = $cache[$rgb];
-            }
-        }
-
-        return $colors;
+        return $this->driver->image;
     }
 
     /**
@@ -498,22 +437,22 @@ class BlurHash
     {
         $factors = [];
 
-        $scale = 1 / ($this->imageWidth * $this->imageHeight);
+        $scale = 1 / ($this->driver->width * $this->driver->height);
 
-        for ($y = 0; $y < $this->componentY; ++$y) {
-            $yHeight = M_PI * $y / $this->imageHeight;
+        for ($y = 0; $y < $this->componentY; $y++) {
+            $yHeight = M_PI * $y / $this->driver->height;
 
-            for ($x = 0; $x < $this->componentX; ++$x) {
+            for ($x = 0; $x < $this->componentX; $x++) {
                 $normalisation = $x === 0 && $y === 0 ? 1 : 2;
 
-                $xWidth = M_PI * $x / $this->imageWidth;
+                $xWidth = M_PI * $x / $this->driver->width;
 
                 $r = $g = $b = 0;
 
-                for ($i = 0; $i < $this->imageWidth; ++$i) {
+                for ($i = 0; $i < $this->driver->width; $i++) {
                     $cosWidth = $normalisation * cos($xWidth * $i);
 
-                    for ($j = 0; $j < $this->imageHeight; ++$j) {
+                    for ($j = 0; $j < $this->driver->height; $j++) {
                         $basis = $cosWidth * cos($yHeight * $j);
 
                         $color = $colors[$i][$j];
@@ -551,6 +490,9 @@ class BlurHash
         ];
     }
 
+    /**
+     * @return int<0, 255>
+     */
     protected function toSRGB(float $value): int
     {
         $value = max(0, min(1, $value));
@@ -561,7 +503,7 @@ class BlurHash
             $value = (1.055 * pow($value, 1 / 2.4) - 0.055) * 255 + 0.5;
         }
 
-        return intval($value);
+        return intval($value); // @phpstan-ignore-line
     }
 
     /**
@@ -610,6 +552,8 @@ class BlurHash
 
     /**
      * Set component x.
+     *
+     * @param  int<1, 9>  $componentX
      */
     public function setComponentX(int $componentX): self
     {
@@ -620,6 +564,8 @@ class BlurHash
 
     /**
      * Set component y.
+     *
+     * @param  int<1, 9>  $componentY
      */
     public function setComponentY(int $componentY): self
     {
@@ -630,18 +576,23 @@ class BlurHash
 
     /**
      * Restrict component value between 1 and 9.
+     *
+     * @param  int<1, 9>  $value
+     * @return int<1, 9>
      */
-    protected function normalizeComponent(int $value): int
+    public function normalizeComponent(int $value): int
     {
         return max(1, min(9, $value));
     }
 
     /**
      * Set resized image max width.
+     *
+     * @param  positive-int  $maxSize
      */
-    public function setResizedImageMaxWidth(int $imageWidth): self
+    public function setMaxSize(int $maxSize): self
     {
-        $this->imageWidth = $imageWidth;
+        $this->driver->maxSize = max($maxSize, 1);
 
         return $this;
     }

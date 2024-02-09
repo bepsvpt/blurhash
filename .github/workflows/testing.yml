@@ -2,10 +2,8 @@ name: Testing
 
 on:
   push:
-  pull_request:
   schedule:
-    # run tests on every week Monday
-    - cron: '0 0 * * 1'
+    - cron: '0 0 * * 1' # run tests on every week Monday
 
 jobs:
   static_analysis:
@@ -19,14 +17,14 @@ jobs:
       - name: Setup PHP with PECL extension
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.3'
           coverage: xdebug
 
       - name: Get composer cache directory
         run: echo "COMPOSER_DIR=$(composer config cache-files-dir)" >> $GITHUB_ENV
 
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.COMPOSER_DIR }}
           key: ${{ runner.os }}-composer-static-analysis-${{ hashFiles('**/composer.json') }}
@@ -45,7 +43,7 @@ jobs:
         run: composer normalize --dry-run
 
       - name: Run static analysis
-        run: vendor/bin/phpstan --verbose
+        run: vendor/bin/phpstan --memory-limit=-1 --verbose
 
       - name: Run coding style checker
         run: vendor/bin/pint --verbose --test
@@ -61,7 +59,7 @@ jobs:
       matrix:
         laravel: [ '10', '9', '8' ]
         php: [ '8.3', '8.2', '8.1', '8.0' ]
-        os: [ ubuntu-latest, windows-latest, macOS-latest ]
+        os: [ ubuntu-latest, macOS-latest ]
 
     steps:
       - uses: actions/checkout@v4
@@ -70,8 +68,17 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: fileinfo, gd
-          coverage: xdebug
+          extensions: fileinfo, gd, imagick, exif, ffi
+
+      - name: Install libvips
+        if: runner.os == 'Linux'
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: sudo apt-get install -y libvips
+
+      - name: Install libvips
+        if: runner.os == 'macOS'
+        run: brew install vips
 
       - name: Get composer cache directory for Windows
         if: runner.os == 'Windows'
@@ -82,7 +89,7 @@ jobs:
         run: echo "COMPOSER_DIR=$(composer config cache-files-dir)" >> $GITHUB_ENV
 
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.COMPOSER_DIR }}
           key: ${{ runner.os }}-composer-laravel-${{ matrix.laravel }}-php-${{ matrix.php }}-${{ hashFiles('**/composer.json') }}

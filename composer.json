@@ -10,22 +10,28 @@
   "authors": [
     {
       "name": "bepsvpt",
-      "email": "og7lsrszah6y3lz@infinitefa.email"
+      "email": "6ibrl@cpp.tw"
     }
   ],
   "homepage": "https://github.com/bepsvpt/blurhash",
   "require": {
     "php": "^8.0",
-    "ext-gd": "*",
-    "illuminate/support": "^8.0 || ^9.0 || ^10.0",
-    "intervention/image": "^2.7"
+    "ext-exif": "*",
+    "illuminate/support": "^8.0 || ^9.0 || ^10.0 || ^11.0"
   },
   "require-dev": {
-    "ergebnis/composer-normalize": "^2.39",
+    "ergebnis/composer-normalize": "^2.42",
+    "jcupitt/vips": "^2.3",
+    "larastan/larastan": "^2.8",
     "laravel/pint": "^1.13",
-    "orchestra/testbench": "^6.38 || ^7.35 || ^8.15",
-    "phpstan/phpstan": "^1.10",
-    "phpunit/phpunit": "^9.6 || ^10.4"
+    "orchestra/testbench": "^6.42 || ^7.40 || ^8.21",
+    "phpunit/phpunit": "^9.6"
+  },
+  "suggest": {
+    "ext-ffi": "Required to use php-vips driver.",
+    "ext-gd": "Required to use GD driver.",
+    "ext-imagick": "Required to use Imagick driver.",
+    "jcupitt/vips": "Required to use php-vips driver."
   },
   "minimum-stability": "dev",
   "prefer-stable": true,

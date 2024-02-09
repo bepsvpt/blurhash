@@ -9,15 +9,22 @@ A PHP implementation of [BlurHash](https://github.com/woltapp/blurhash) with Lar
 
 BlurHash is a compact representation of a placeholder for an image.
 
-![screenshot](screenshot.png)
+![screenshot](https://raw.githubusercontent.com/bepsvpt/blurhash/main/screenshot.png)
 
 <p align="center">Nr8%YLkDR4j[aej]NSaznzjuk9ayR3jYofayj[f6</p>
 
+- [Version](#version)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Changelog](#changelog)
+- [Upgrade](#upgrade)
+- [License](#license)
+
 ## Version
 
-2.1.1
+3.0.0
 
-## Supported Laravel Version
+### Supported Laravel Version
 
 8.0 ~ 10.x
 
@@ -44,10 +51,10 @@ Done!
 ### Facade
 
 ```php
-BlurHash::encode($file);
+BlurHash::encode($path);
 ```
 
-`$file` can be any [Intervention make method](https://image.intervention.io/v2/api/make) acceptable source.
+`$file` can be `UploadedFile` or a file path string.
 
 ### app helper function
 
@@ -55,9 +62,17 @@ BlurHash::encode($file);
 app('blurhash')
   ->setComponentX(7)
   ->setComponentY(4)
-  ->setResizedImageMaxWidth(96)
+  ->setMaxSize(96)
   ->encode(request('file'));
 ```
+
+## Changelog
+
+Please see [CHANGELOG](CHANGELOG.md) for details.
+
+## Upgrade
+
+Please see [UPGRADE](UPGRADE.md) for details.
 
 ## License
 

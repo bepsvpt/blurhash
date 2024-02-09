@@ -50,9 +50,10 @@ class BlurHashServiceProvider extends ServiceProvider
             $config = $app['config']->get('blurhash');
 
             return new BlurHash(
+                $config['driver'] ?? 'gd',
                 $config['components-x'],
                 $config['components-y'],
-                $config['resized-image-max-width']
+                $config['resized-max-size'] ?? $config['resized-image-max-width'],
             );
         });
     }
@@ -62,6 +63,6 @@ class BlurHashServiceProvider extends ServiceProvider
      */
     protected function configPath(): string
     {
-        return __DIR__ . '/../config/blurhash.php';
+        return __DIR__.'/../config/blurhash.php';
     }
 }

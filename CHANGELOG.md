@@ -1,5 +1,11 @@
 # BlurHash Changelog
 
+## 3.x
+
+- 3.0.0 (2024-02-10)
+  - Added support for the libvips ([php-vips](https://github.com/libvips/php-vips)) image processing library as a driver.
+  - Separated from the [intervention/image](https://github.com/Intervention/image) library.
+
 ## 2.x
 
 - 2.1.1 (2023-04-24)
