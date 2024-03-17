@@ -11,5 +11,6 @@
 artisan export-ignore
 phpstan.neon export-ignore
 phpunit.xml export-ignore
+pint.json export-ignore
 screenshot.png export-ignore
 testbench.yaml export-ignore
