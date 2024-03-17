@@ -7,6 +7,8 @@ use Bepsvpt\Blurhash\Facades\BlurHash as BlurHashFacade;
 use FFI\ParserException;
 use GdImage;
 use Imagick;
+use Jcupitt\Vips\Config;
+use Jcupitt\Vips\DebugLogger;
 use Jcupitt\Vips\Image;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase;
@@ -14,6 +16,16 @@ use Orchestra\Testbench\TestCase;
 class BlurHashTest extends TestCase
 {
     use WithWorkbench;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Config::setLogger(new DebugLogger());
+    }
 
     protected function file(string $name): string
     {
