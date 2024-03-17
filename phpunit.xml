@@ -3,20 +3,16 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
   bootstrap="vendor/autoload.php"
+  beStrictAboutChangesToGlobalState="true"
   colors="true"
+  columns="max"
   executionOrder="random"
-  testdox="true"
 >
   <testsuites>
-    <testsuite name="BlurHash Test">
+    <testsuite name="Test Suite">
       <directory>tests</directory>
     </testsuite>
   </testsuites>
-  <coverage>
-    <report>
-      <html outputDirectory="coverage"/>
-    </report>
-  </coverage>
   <php>
     <ini name="memory_limit" value="-1"/>
     <ini name="error_reporting" value="-1"/>
