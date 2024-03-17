@@ -4,6 +4,9 @@ includes:
 parameters:
     level: max
 
+    parallel:
+        maximumNumberOfProcesses: 4
+
     paths:
         - src
         - tests
