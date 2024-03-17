@@ -46,7 +46,7 @@ jobs:
         run: vendor/bin/phpstan --memory-limit=-1 --verbose
 
       - name: Run coding style checker
-        run: vendor/bin/pint --verbose --test
+        run: vendor/bin/pint -v --test
 
   testing:
     name: Laravel ${{ matrix.laravel }}, PHP ${{ matrix.php }}, OS ${{ matrix.os }}
@@ -57,9 +57,12 @@ jobs:
       fail-fast: false
 
       matrix:
-        laravel: [ '10', '9', '8' ]
+        laravel: [ '11.0', '10.0', '9.0', '8.0' ]
         php: [ '8.3', '8.2', '8.1', '8.0' ]
         os: [ ubuntu-latest, macOS-latest ]
+        exclude:
+          - { laravel: '11.0', php: '8.0' }
+          - { laravel: '11.0', php: '8.1' }
 
     steps:
       - uses: actions/checkout@v4

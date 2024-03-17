@@ -22,9 +22,9 @@
   "require-dev": {
     "ergebnis/composer-normalize": "^2.42",
     "jcupitt/vips": "^2.3",
-    "larastan/larastan": "^2.8",
-    "laravel/pint": "^1.13",
-    "orchestra/testbench": "^6.42 || ^7.40 || ^8.21",
+    "larastan/larastan": "^2.9",
+    "laravel/pint": "^1.14",
+    "orchestra/testbench": "^6.43 || ^7.41 || ^8.22 || ^9.0",
     "phpunit/phpunit": "^9.6"
   },
   "suggest": {
@@ -33,7 +33,7 @@
     "ext-imagick": "Required to use Imagick driver.",
     "jcupitt/vips": "Required to use php-vips driver."
   },
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "prefer-stable": true,
   "autoload": {
     "psr-4": {
