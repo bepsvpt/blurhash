@@ -81,7 +81,7 @@ jobs:
 
       - name: Install libvips
         if: runner.os == 'macOS'
-        run: brew install vips
+        run: brew install vips && brew link vips
 
       - name: Get composer cache directory for Windows
         if: runner.os == 'Windows'

@@ -4,7 +4,6 @@ namespace Bepsvpt\Blurhash\Tests;
 
 use Bepsvpt\Blurhash\BlurHash;
 use Bepsvpt\Blurhash\Facades\BlurHash as BlurHashFacade;
-use FFI\ParserException;
 use GdImage;
 use Imagick;
 use Jcupitt\Vips\Config;
@@ -100,14 +99,10 @@ class BlurHashTest extends TestCase
 
         $blurhash = new BlurHash('php-vips');
 
-        try {
-            $this->assertSame(
-                'L8AwbmjG00xu_NR*4TtQ.8R%IUkD',
-                $blurhash->encode($path),
-            );
-        } catch (ParserException) { // @phpstan-ignore-line
-            $this->markTestSkipped();
-        }
+        $this->assertSame(
+            'L8AwbmjG00xu_NR*4TtQ.8R%IUkD',
+            $blurhash->encode($path),
+        );
 
         $blurhash->setMaxSize(256);
 
@@ -172,14 +167,10 @@ class BlurHashTest extends TestCase
             default => 'LdTRKIs9e9sA-;i_enkChee9ene.',
         };
 
-        try {
-            $this->assertSame(
-                $hash,
-                (new BlurHash('php-vips'))->encode($this->file('06.png'))
-            );
-        } catch (ParserException) {
-            // ignored
-        }
+        $this->assertSame(
+            $hash,
+            (new BlurHash('php-vips'))->encode($this->file('06.png'))
+        );
     }
 
     /**
@@ -244,15 +235,11 @@ class BlurHashTest extends TestCase
 
     public function testPhpVipsDriverDecode(): void
     {
-        try {
-            $image = (new BlurHash('php-vips'))->decode(
-                'rDBDsRV@00xu_NIU4nx]?b.8WBDit7-;RjIUxaxux]WBM{kCjZj[s;WBRjRPjZofjZkBkCaxjZWB%gkCM{jZt7WCWBj?j[Mxj[kCa|kCoLj[WBR*',
-                300,
-                200,
-            );
-        } catch (ParserException) { // @phpstan-ignore-line
-            $this->markTestSkipped();
-        }
+        $image = (new BlurHash('php-vips'))->decode(
+            'rDBDsRV@00xu_NIU4nx]?b.8WBDit7-;RjIUxaxux]WBM{kCjZj[s;WBRjRPjZofjZkBkCaxjZWB%gkCM{jZt7WCWBj?j[Mxj[kCa|kCoLj[WBR*',
+            300,
+            200,
+        );
 
         $this->assertInstanceOf(Image::class, $image);
 
