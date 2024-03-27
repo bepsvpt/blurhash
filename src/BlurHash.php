@@ -330,7 +330,7 @@ class BlurHash
     public function encode(UploadedFile|string $data): string
     {
         if ($data instanceof UploadedFile) {
-            $data = $data->getPath();
+            $data = $data->getPathname();
         }
 
         $ac = $this->transform(
