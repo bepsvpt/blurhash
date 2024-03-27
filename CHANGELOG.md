@@ -2,9 +2,13 @@
 
 ## 3.x
 
+- 3.0.1 (2024-03-27)
+  - Fix path when encoding from UploadedFile
+
 - 3.0.0 (2024-02-10)
   - Added support for the libvips ([php-vips](https://github.com/libvips/php-vips)) image processing library as a driver.
   - Separated from the [intervention/image](https://github.com/Intervention/image) library.
+  - Support Laravel 11
 
 ## 2.x
 

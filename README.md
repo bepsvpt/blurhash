@@ -22,11 +22,11 @@ BlurHash is a compact representation of a placeholder for an image.
 
 ## Version
 
-3.0.0
+3.0.1
 
 ### Supported Laravel Version
 
-8.0 ~ 10.x
+8.0 ~ 11.x
 
 ## Installation
 
