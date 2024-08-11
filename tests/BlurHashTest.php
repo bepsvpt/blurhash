@@ -225,12 +225,7 @@ class BlurHashTest extends TestCase
 
         $this->assertTrue($image->writeImage('jpg:'.$path));
 
-        $hash = match (PHP_OS_FAMILY) {
-            'Darwin' => md5_file($this->file('11.jpg')),
-            default => '305ada74d76f6ed94ad743659abe2a29',
-        };
-
-        $this->assertSame($hash, md5_file($path));
+        $this->assertSame('305ada74d76f6ed94ad743659abe2a29', md5_file($path));
     }
 
     public function testPhpVipsDriverDecode(): void
