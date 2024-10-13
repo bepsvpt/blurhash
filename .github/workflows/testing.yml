@@ -72,6 +72,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: fileinfo, gd, imagick, exif, ffi
+          ini-values: zend.max_allowed_stack_size=-1
 
       - name: Install libvips
         if: runner.os == 'Linux'
