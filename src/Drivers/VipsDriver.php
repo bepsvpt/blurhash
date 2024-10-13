@@ -52,9 +52,9 @@ class VipsDriver extends Driver
             $this->pixels = [];
 
             return Image::newFromFile($path);
-        } catch (Exception) {
+        } catch (Exception $e) {
             throw new UnsupportedFileException(
-                sprintf('The "%s" is not a supported image file.', $path),
+                sprintf('The "%s" is not a supported image file. (%s)', $path, $e->getMessage()),
             );
         }
     }
