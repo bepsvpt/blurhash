@@ -119,7 +119,7 @@ class ImagickDriver extends Driver
      */
     public function create(int $width, int $height): static
     {
-        $this->image = new Imagick();
+        $this->image = new Imagick;
 
         try {
             $this->image->newImage(
@@ -128,7 +128,7 @@ class ImagickDriver extends Driver
                 new ImagickPixel('transparent'),
             );
         } catch (ImagickException) {
-            throw new UnableToCreateImageException();
+            throw new UnableToCreateImageException;
         }
 
         return $this;
@@ -144,19 +144,19 @@ class ImagickDriver extends Driver
         try {
             $rga = sprintf('rgb(%s,%s,%s)', ...$color);
 
-            $draw = new ImagickDraw();
+            $draw = new ImagickDraw;
 
             $draw->setFillColor(new ImagickPixel($rga));
 
             $draw->point($x, $y);
 
             if ($this->image->drawImage($draw) === false) {
-                throw new UnableToSetPixelException();
+                throw new UnableToSetPixelException;
             }
 
             return true;
         } catch (ImagickException|ImagickDrawException|ImagickPixelException) {
-            throw new UnableToSetPixelException();
+            throw new UnableToSetPixelException;
         }
     }
 }

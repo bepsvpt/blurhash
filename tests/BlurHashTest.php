@@ -23,7 +23,7 @@ class BlurHashTest extends TestCase
     {
         parent::setUp();
 
-        Config::setLogger(new DebugLogger());
+        Config::setLogger(new DebugLogger);
     }
 
     protected function file(string $name): string

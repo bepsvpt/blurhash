@@ -92,7 +92,7 @@ class GdDriver extends Driver
     public function resize(object $origin): GdImage
     {
         if (imagepalettetotruecolor($origin) === false) {
-            throw new UnableToConvertColorException();
+            throw new UnableToConvertColorException;
         }
 
         [$originWidth, $originHeight] = $this->size($origin);
@@ -162,7 +162,7 @@ class GdDriver extends Driver
      */
     public function size(object $image): array
     {
-        return [ // @phpstan-ignore-line
+        return [
             imagesx($image),
             imagesy($image),
         ];
@@ -198,7 +198,7 @@ class GdDriver extends Driver
         $image = imagecreatetruecolor($width, $height);
 
         if ($image === false) {
-            throw new UnableToCreateImageException();
+            throw new UnableToCreateImageException;
         }
 
         $this->image = $image;
@@ -216,7 +216,7 @@ class GdDriver extends Driver
         $draw = imagecolorallocate($this->image, ...$color);
 
         if ($draw === false) {
-            throw new UnableToSetPixelException();
+            throw new UnableToSetPixelException;
         }
 
         return imagesetpixel($this->image, $x, $y, $draw);

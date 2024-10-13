@@ -141,7 +141,7 @@ class VipsDriver extends Driver
 
             $this->memory = $this->image->writeToMemory();
         } catch (Exception) {
-            throw new UnableToCreateImageException();
+            throw new UnableToCreateImageException;
         }
 
         return $this;
@@ -171,7 +171,7 @@ class VipsDriver extends Driver
                 $this->image->format,
             );
         } catch (Exception) {
-            throw new UnableToSetPixelException();
+            throw new UnableToSetPixelException;
         }
 
         return true;

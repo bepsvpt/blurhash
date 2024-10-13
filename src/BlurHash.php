@@ -311,7 +311,7 @@ class BlurHash
             'php-vips' => VipsDriver::class,
         ];
 
-        if (! isset($drivers[$loader])) {
+        if (! isset($drivers[$loader])) { // @phpstan-ignore isset.offset
             throw new DriverNotFoundException(
                 sprintf('"%s" is not a valid driver.', $loader),
             );
