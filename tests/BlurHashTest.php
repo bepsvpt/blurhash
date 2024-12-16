@@ -31,7 +31,7 @@ class BlurHashTest extends TestCase
         return __DIR__.'/images/'.$name;
     }
 
-    public function testGdDriverEncode(): void
+    public function test_gd_driver_encode(): void
     {
         $path = $this->file('01.jpg');
 
@@ -61,7 +61,7 @@ class BlurHashTest extends TestCase
         );
     }
 
-    public function testImagickDriverEncode(): void
+    public function test_imagick_driver_encode(): void
     {
         $path = $this->file('01.jpg');
 
@@ -93,7 +93,7 @@ class BlurHashTest extends TestCase
         $this->assertSame($hash, $blurhash->encode($path));
     }
 
-    public function testPhpVipsDriverEncode(): void
+    public function test_php_vips_driver_encode(): void
     {
         $path = $this->file('01.jpg');
 
@@ -128,7 +128,7 @@ class BlurHashTest extends TestCase
         );
     }
 
-    public function testDifferentFormatsEncode(): void
+    public function test_different_formats_encode(): void
     {
         $hash = new BlurHash('gd');
 
@@ -176,7 +176,7 @@ class BlurHashTest extends TestCase
     /**
      * @requires PHP >= 8.1.0
      */
-    public function testAvifFormatEncode(): void
+    public function test_avif_format_encode(): void
     {
         $hash = new BlurHash('gd');
 
@@ -186,7 +186,7 @@ class BlurHashTest extends TestCase
         );
     }
 
-    public function testGdDriverDecode(): void
+    public function test_gd_driver_decode(): void
     {
         $image = (new BlurHash('gd'))->decode(
             'rDBDsRV@00xu_NIU4nx]?b.8WBDit7-;RjIUxaxux]WBM{kCjZj[s;WBRjRPjZofjZkBkCaxjZWB%gkCM{jZt7WCWBj?j[Mxj[kCa|kCoLj[WBR*',
@@ -207,7 +207,7 @@ class BlurHashTest extends TestCase
         $this->assertSame(md5_file($this->file('10.jpg')), md5_file($path));
     }
 
-    public function testImagickDriverDecode(): void
+    public function test_imagick_driver_decode(): void
     {
         $image = (new BlurHash('imagick'))->decode(
             'rDBDsRV@00xu_NIU4nx]?b.8WBDit7-;RjIUxaxux]WBM{kCjZj[s;WBRjRPjZofjZkBkCaxjZWB%gkCM{jZt7WCWBj?j[Mxj[kCa|kCoLj[WBR*',
@@ -228,7 +228,7 @@ class BlurHashTest extends TestCase
         $this->assertSame('305ada74d76f6ed94ad743659abe2a29', md5_file($path));
     }
 
-    public function testPhpVipsDriverDecode(): void
+    public function test_php_vips_driver_decode(): void
     {
         $image = (new BlurHash('php-vips'))->decode(
             'rDBDsRV@00xu_NIU4nx]?b.8WBDit7-;RjIUxaxux]WBM{kCjZj[s;WBRjRPjZofjZkBkCaxjZWB%gkCM{jZt7WCWBj?j[Mxj[kCa|kCoLj[WBR*',
@@ -252,7 +252,7 @@ class BlurHashTest extends TestCase
         );
     }
 
-    public function testLaravelFacade(): void
+    public function test_laravel_facade(): void
     {
         $this->assertSame(
             'L8Am^~jG00xu_NR*4TtQ.8R%IUkD',
