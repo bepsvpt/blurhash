@@ -3,16 +3,19 @@ name: Testing
 on:
   push:
   schedule:
-    - cron: '0 0 * * 1' # run tests on every week Monday
+    - cron: '0 0 * * 1'
 
 jobs:
   static_analysis:
     name: Static Analysis
 
+
     runs-on: ubuntu-latest
+
 
     steps:
       - uses: actions/checkout@v4
+
 
       - name: Setup PHP with PECL extension
         uses: shivammathur/setup-php@v2
@@ -20,8 +23,10 @@ jobs:
           php-version: '8.3'
           coverage: xdebug
 
+
       - name: Get composer cache directory
         run: echo "COMPOSER_DIR=$(composer config cache-files-dir)" >> $GITHUB_ENV
+
 
       - name: Cache dependencies
         uses: actions/cache@v4
@@ -30,20 +35,26 @@ jobs:
           key: ${{ runner.os }}-composer-static-analysis-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-composer-static-analysis-
 
+
       - name: Install dependencies
         run: composer update --no-progress --no-interaction
+
 
       - name: Check runtime dependencies
         run: composer check-platform-reqs
 
+
       - name: Run composer validate
         run: composer validate --strict
+
 
       - name: Run composer normalize
         run: composer normalize --dry-run
 
+
       - name: Run static analysis
         run: vendor/bin/phpstan --memory-limit=-1 --verbose
+
 
       - name: Run coding style checker
         run: vendor/bin/pint -v --test
@@ -51,21 +62,29 @@ jobs:
   testing:
     name: Laravel ${{ matrix.laravel }}, PHP ${{ matrix.php }}, OS ${{ matrix.os }}
 
+
     runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
-
       matrix:
-        laravel: [ '11.0', '10.0', '9.0', '8.0' ]
-        php: [ '8.3', '8.2', '8.1', '8.0' ]
-        os: [ ubuntu-latest, macOS-latest ]
+        laravel: ['8.0', '9.0', '10.0', '11.0', '12.0']
+        php: ['8.3', '8.2', '8.1', '8.0']
+        os: [ubuntu-latest, macOS-latest]
         exclude:
-          - { laravel: '11.0', php: '8.0' }
-          - { laravel: '11.0', php: '8.1' }
+          - laravel: '11.0'
+            php: '8.0'
+          - laravel: '11.0'
+            php: '8.1'
+          - laravel: '12.0'
+            php: '8.1'
+          - laravel: '12.0'
+            php: '8.0'
+
 
     steps:
       - uses: actions/checkout@v4
+
 
       - name: Setup PHP with PECL extension
         uses: shivammathur/setup-php@v2
@@ -74,23 +93,28 @@ jobs:
           extensions: fileinfo, gd, imagick, exif, ffi
           ini-values: zend.max_allowed_stack_size=-1, zend.assertions=1
 
+
       - name: Install libvips
-        if: runner.os == 'Linux'
+        if: "runner.os == 'Linux'"
         env:
           DEBIAN_FRONTEND: noninteractive
         run: sudo apt-get install -y libvips
 
+
       - name: Install libvips
-        if: runner.os == 'macOS'
+        if: "runner.os == 'macOS'"
         run: brew install vips
 
+
       - name: Get composer cache directory for Windows
-        if: runner.os == 'Windows'
+        if: "runner.os == 'Windows'"
         run: echo "COMPOSER_DIR=$(composer config cache-files-dir)" >> $env:GITHUB_ENV
 
+
       - name: Get composer cache directory for other OS
-        if: runner.os != 'Windows'
+        if: "runner.os != 'Windows'"
         run: echo "COMPOSER_DIR=$(composer config cache-files-dir)" >> $GITHUB_ENV
+
 
       - name: Cache dependencies
         uses: actions/cache@v4
@@ -99,11 +123,14 @@ jobs:
           key: ${{ runner.os }}-composer-laravel-${{ matrix.laravel }}-php-${{ matrix.php }}-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-composer-laravel-
 
+
       - name: Remove static analysis packages to prevent platform issues
         run: composer remove --dev --no-update ergebnis/composer-normalize laravel/pint larastan/larastan
 
+
       - name: Install dependencies with specific Laravel version
         run: composer update --with illuminate/support:~${{ matrix.laravel }} --no-progress --no-interaction
+
 
       - name: Run tests
         run: vendor/bin/phpunit
