@@ -1,5 +1,11 @@
 # BlurHash Changelog
 
+## 4.x
+
+- 4.0.0 (2025-03-16)
+  - Support Laravel 12
+  - Drop Lumen
+
 ## 3.x
 
 - 3.0.1 (2024-03-27)

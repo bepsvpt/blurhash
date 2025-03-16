@@ -1,3 +1,7 @@
+## 3.x.x to 4.0.0
+
+- Lumen is no longer supported.
+
 ## 2.x.x to 3.0.0
 
 - A new configuration option, `driver`, has been added. You can see it [here](https://github.com/bepsvpt/blurhash/blob/3.0.0/config/blurhash.php#L5-L11) and add it to your own config file.
