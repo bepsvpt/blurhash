@@ -1,66 +1,66 @@
 {
-  "name": "bepsvpt/blurhash",
-  "description": "A PHP implementation of BlurHash with Laravel integration.",
-  "license": "MIT",
-  "type": "library",
-  "keywords": [
-    "blurhash",
-    "laravel"
-  ],
-  "authors": [
-    {
-      "name": "bepsvpt",
-      "email": "6ibrl@cpp.tw"
-    }
-  ],
-  "homepage": "https://github.com/bepsvpt/blurhash",
-  "require": {
-    "php": "^8.0",
-    "ext-exif": "*",
-    "illuminate/support": "^8.0 || ^9.0 || ^10.0 || ^11.0"
-  },
-  "require-dev": {
-    "ergebnis/composer-normalize": "^2.42",
-    "jcupitt/vips": "^2.3",
-    "larastan/larastan": "^2.9",
-    "laravel/pint": "^1.14",
-    "orchestra/testbench": "^6.43 || ^7.41 || ^8.22 || ^9.0",
-    "phpunit/phpunit": "^9.6"
-  },
-  "suggest": {
-    "ext-ffi": "Required to use php-vips driver.",
-    "ext-gd": "Required to use GD driver.",
-    "ext-imagick": "Required to use Imagick driver.",
-    "jcupitt/vips": "Required to use php-vips driver."
-  },
-  "minimum-stability": "stable",
-  "prefer-stable": true,
-  "autoload": {
-    "psr-4": {
-      "Bepsvpt\\Blurhash\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Bepsvpt\\Blurhash\\Tests\\": "tests/"
-    }
-  },
-  "config": {
-    "allow-plugins": {
-      "ergebnis/composer-normalize": true
+    "name": "bepsvpt/blurhash",
+    "description": "A PHP implementation of BlurHash with Laravel integration.",
+    "license": "MIT",
+    "type": "library",
+    "keywords": [
+        "blurhash",
+        "laravel"
+    ],
+    "authors": [
+        {
+            "name": "bepsvpt",
+            "email": "6ibrl@cpp.tw"
+        }
+    ],
+    "homepage": "https://github.com/bepsvpt/blurhash",
+    "require": {
+        "php": "^8.0",
+        "ext-exif": "*",
+        "illuminate/support": "^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0"
     },
-    "optimize-autoloader": true,
-    "preferred-install": "dist",
-    "sort-packages": true
-  },
-  "extra": {
-    "laravel": {
-      "aliases": {
-        "BlurHash": "Bepsvpt\\Blurhash\\Facades\\BlurHash"
-      },
-      "providers": [
-        "Bepsvpt\\Blurhash\\BlurHashServiceProvider"
-      ]
+    "require-dev": {
+        "ergebnis/composer-normalize": "^2.42",
+        "jcupitt/vips": "^2.3",
+        "larastan/larastan": "^2.9",
+        "laravel/pint": "^1.14",
+        "orchestra/testbench": "^6.43 || ^7.41 || ^8.22 || ^9.0 || ^10.0",
+        "phpunit/phpunit": "^9.6 || ^11.5.3"
+    },
+    "suggest": {
+        "ext-ffi": "Required to use php-vips driver.",
+        "ext-gd": "Required to use GD driver.",
+        "ext-imagick": "Required to use Imagick driver.",
+        "jcupitt/vips": "Required to use php-vips driver."
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "Bepsvpt\\Blurhash\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Bepsvpt\\Blurhash\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true
+        },
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "aliases": {
+                "BlurHash": "Bepsvpt\\Blurhash\\Facades\\BlurHash"
+            },
+            "providers": [
+                "Bepsvpt\\Blurhash\\BlurHashServiceProvider"
+            ]
+        }
     }
-  }
 }
