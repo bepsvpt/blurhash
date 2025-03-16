@@ -4,20 +4,6 @@ includes:
 parameters:
     level: max
 
-    parallel:
-        maximumNumberOfProcesses: 4
-
     paths:
         - src
         - tests
-
-    ignoreErrors:
-        -
-            message: "#Class Laravel\\\\Lumen\\\\Application not found\\.#"
-            count: 1
-            path: src/BlurHashServiceProvider.php
-
-        -
-            message: "#Call to an undefined method Illuminate\\\\Contracts\\\\Foundation\\\\Application\\:\\:configure\\(\\)\\.#"
-            count: 1
-            path: src/BlurHashServiceProvider.php

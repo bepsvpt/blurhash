@@ -23,7 +23,7 @@ class BlurHashTest extends TestCase
     {
         parent::setUp();
 
-        if (in_array('--debug', $_SERVER['argv'], true)) {
+        if (is_array($_SERVER['argv']) && in_array('--debug', $_SERVER['argv'], true)) {
             Config::setLogger(new DebugLogger);
         }
     }

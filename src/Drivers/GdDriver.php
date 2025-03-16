@@ -35,7 +35,6 @@ class GdDriver extends Driver
     /**
      * {@inheritdoc}
      *
-     * @throws DriverNotFoundException
      * @throws UnableToReadFileException
      * @throws UnsupportedFileException
      */
@@ -51,7 +50,7 @@ class GdDriver extends Driver
             IMAGETYPE_WEBP => 'imagecreatefromwebp',
         ];
 
-        if (version_compare(PHP_VERSION, '8.1.0', '>=')) {
+        if (PHP_VERSION_ID >= 80100) {
             $supported[IMAGETYPE_AVIF] = 'imagecreatefromavif';
         }
 
@@ -64,12 +63,6 @@ class GdDriver extends Driver
         }
 
         $callback = $supported[$type];
-
-        if (! function_exists($callback)) {
-            throw new DriverNotFoundException(
-                sprintf('Function "%s" not found.', $callback),
-            );
-        }
 
         $image = call_user_func($callback, $path);
 
@@ -103,9 +96,9 @@ class GdDriver extends Driver
             return $origin;
         }
 
-        $width = (int) ceil($originWidth / $scale);
+        $width = max((int) ceil($originWidth / $scale), 1);
 
-        $height = (int) ceil($originHeight / $scale);
+        $height = max((int) ceil($originHeight / $scale), 1);
 
         $image = imagecreatetruecolor($width, $height);
 

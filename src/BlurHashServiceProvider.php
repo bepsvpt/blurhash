@@ -2,8 +2,8 @@
 
 namespace Bepsvpt\Blurhash;
 
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Lumen\Application;
 
 class BlurHashServiceProvider extends ServiceProvider
 {
@@ -11,18 +11,6 @@ class BlurHashServiceProvider extends ServiceProvider
      * Bootstrap the application events.
      */
     public function boot(): void
-    {
-        if ($this->app instanceof Application) {
-            $this->bootLumen();
-        } else {
-            $this->bootLaravel();
-        }
-    }
-
-    /**
-     * Bootstrap laravel application events.
-     */
-    protected function bootLaravel(): void
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
@@ -32,28 +20,20 @@ class BlurHashServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap lumen application events.
-     */
-    protected function bootLumen(): void
-    {
-        $this->app->configure('blurhash');
-    }
-
-    /**
      * Register the service provider.
      */
     public function register(): void
     {
         $this->mergeConfigFrom($this->configPath(), 'blurhash');
 
-        $this->app->singleton('blurhash', function ($app) {
-            $config = $app['config']->get('blurhash');
+        $this->app->singleton('blurhash', function (Application $app) {
+            $config = $app->make('config')->get('blurhash');
 
             return new BlurHash(
-                $config['driver'] ?? 'gd',
-                $config['components-x'],
-                $config['components-y'],
-                $config['resized-max-size'] ?? $config['resized-image-max-width'],
+                $config['driver'] ?? 'gd', // @phpstan-ignore-line
+                $config['components-x'], // @phpstan-ignore-line
+                $config['components-y'], // @phpstan-ignore-line
+                $config['resized-max-size'] ?? $config['resized-image-max-width'], // @phpstan-ignore-line
             );
         });
     }

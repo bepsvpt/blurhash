@@ -347,7 +347,7 @@ class BlurHash
         if (! count($ac)) {
             $hash .= Base83::encode(0, 1);
         } else {
-            $actual = max(array_map('max', $ac));
+            $actual = max(array_map(fn (array $value) => max($value), $ac));
 
             $quantised = max(0, min(82, intval($actual * 166 - 0.5)));
 
@@ -431,7 +431,7 @@ class BlurHash
      * I don't know the meaning of the math calculation.
      *
      * @param  array<int, array<int, array<int, float>>>  $colors
-     * @return array<int, array<int, float>>
+     * @return array<int, non-empty-array<int, float>>
      */
     protected function transform(array $colors): array
     {

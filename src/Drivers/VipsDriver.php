@@ -109,7 +109,10 @@ class VipsDriver extends Driver
     {
         try {
             if (empty($this->pixels)) {
-                $this->pixels = $image->writeToArray();
+                /** @var array<int, int<0, 255>> $pixels */
+                $pixels = $image->writeToArray();
+
+                $this->pixels = $pixels;
             }
         } catch (Exception) {
             return false;
@@ -117,10 +120,10 @@ class VipsDriver extends Driver
 
         $idx = $x * 3 + $this->width * $y * 3;
 
-        return [ // @phpstan-ignore-line
-            (int) $this->pixels[$idx],
-            (int) $this->pixels[$idx + 1],
-            (int) $this->pixels[$idx + 2],
+        return [
+            $this->pixels[$idx],
+            $this->pixels[$idx + 1],
+            $this->pixels[$idx + 2],
         ];
     }
 
