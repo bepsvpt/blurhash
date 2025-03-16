@@ -175,11 +175,12 @@ class BlurHashTest extends TestCase
         );
     }
 
-    /**
-     * @requires PHP >= 8.1.0
-     */
     public function test_avif_format_encode(): void
     {
+        if (PHP_VERSION_ID < 80100) {
+            $this->markTestSkipped('This test requires PHP 8.1.0 or higher.');
+        }
+
         $hash = new BlurHash('gd');
 
         $this->assertSame(
