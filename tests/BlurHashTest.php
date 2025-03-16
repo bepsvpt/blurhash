@@ -119,13 +119,8 @@ class BlurHashTest extends TestCase
 
         $blurhash->setComponentY(5);
 
-        $hash = match (PHP_OS_FAMILY) {
-            'Darwin' => 'iDA-0Mae00xu_NIU4nxu?b.8WBDit7-;RjIUt7xu%MWBM{kCo0j[s;aeRjRPjZofjZkBkCaxjsWB%gj]M{jZt7WVWBoKkC',
-            default => 'iDA-0Nae00xu_NIU4nxu?b.8WB9Ft7-;RjIUt7xu%MWBM{kCjsj[s;aeRjRPjZofjZkCkCaxjsWB%gj]M{jZt7WVWBoKkC',
-        };
-
         $this->assertSame(
-            $hash,
+            'iDA-0Mae00xu_NIU4nxu?b.8WBDit7-;RjIUt7xu%MWBM{kCo0j[s;aeRjRPjZofjZkBkCaxjsWB%gj]M{jZt7WVWBoKkC',
             $blurhash->encode($path),
         );
     }
@@ -164,13 +159,8 @@ class BlurHashTest extends TestCase
             (new BlurHash('imagick'))->encode($this->file('06.png'))
         );
 
-        $hash = match (PHP_OS_FAMILY) {
-            'Darwin' => 'LeTRKIsAe9sT-;i_enkChee9ene.',
-            default => 'LdTRKIs9e9sA-;i_enkChee9ene.',
-        };
-
         $this->assertSame(
-            $hash,
+            'LeTRKIsAe9sT-;i_enkChee9ene.',
             (new BlurHash('php-vips'))->encode($this->file('06.png'))
         );
     }
@@ -228,7 +218,12 @@ class BlurHashTest extends TestCase
 
         $this->assertTrue($image->writeImage('jpg:'.$path));
 
-        $this->assertSame('305ada74d76f6ed94ad743659abe2a29', md5_file($path));
+        $hash = match (PHP_OS_FAMILY) {
+            'Darwin' => '305ada74d76f6ed94ad743659abe2a29',
+            default => 'ba82a5e0c26097c3cad914108e5f69b9',
+        };
+
+        $this->assertSame($hash, md5_file($path));
     }
 
     public function test_php_vips_driver_decode(): void
