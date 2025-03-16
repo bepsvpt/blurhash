@@ -69,6 +69,6 @@
       "@putenv XDEBUG_MODE=off",
       "pint --ansi -vvv"
     ],
-    "test": "@php -d zend.max_allowed_stack_size=-1 vendor/bin/phpunit"
+    "test": "@php -d zend.max_allowed_stack_size=-1 -d zend.assertions=1 vendor/bin/phpunit"
   }
 }
