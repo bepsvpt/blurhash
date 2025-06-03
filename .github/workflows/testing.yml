@@ -63,6 +63,8 @@ jobs:
         php: ['8.4', '8.3', '8.2', '8.1', '8.0']
         os: [ubuntu-latest, macOS-latest]
         exclude:
+          - laravel: '10.0'
+            php: '8.0'
           - laravel: '11.0'
             php: '8.0'
           - laravel: '11.0'
