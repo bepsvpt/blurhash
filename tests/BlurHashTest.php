@@ -121,10 +121,12 @@ class BlurHashTest extends TestCase
 
         $blurhash->setComponentY(5);
 
-        $this->assertSame(
-            'iDA-0Mae00xu_NIU4nxu?b.8WBDit7-;RjIUt7xu%MWBM{kCo0j[s;aeRjRPjZofjZkBkCaxjsWB%gj]M{jZt7WVWBoKkC',
-            $blurhash->encode($path),
-        );
+        $hash = match (PHP_OS_FAMILY) {
+            'Darwin' => 'iDA-0Mae00xu_NIU4nxu?b.8WBDit7-;RjIUt7xu%MWBM{kCjsj[s;aeRjRPjZofjZkBkCaxjsWB%gj]M{jZt7WVWBoKkC',
+            default => 'iDA-0Mae00xu_NIU4nxu?b.8WBDit7-;RjIUt7xu%MWBM{kCo0j[s;aeRjRPjZofjZkBkCaxjsWB%gj]M{jZt7WVWBoKkC',
+        };
+
+        $this->assertSame($hash, $blurhash->encode($path));
     }
 
     public function test_different_formats_encode(): void
