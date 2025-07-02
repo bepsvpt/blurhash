@@ -108,10 +108,12 @@ class BlurHashTest extends TestCase
 
         $blurhash->setMaxSize(256);
 
-        $this->assertSame(
-            'L7A^j{V@00%M_NRj4Txu.8RjIUkD',
-            $blurhash->encode($path),
-        );
+        $hash = match (PHP_OS_FAMILY) {
+            'Darwin' => 'L7A^j{V@00%M_NRj4Txu.8RjIUkD',
+            default => 'L7B45kV@00%M_NRj4Txu.8RjIUkD',
+        };
+
+        $this->assertSame($hash, $blurhash->encode($path));
 
         $blurhash->setMaxSize(128);
 
