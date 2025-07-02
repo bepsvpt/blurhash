@@ -2,6 +2,9 @@
 
 ## 4.x
 
+- 4.0.1 (2025-07-02)
+  - Fix vips driver encoding issue for single band image ([#15](https://github.com/bepsvpt/blurhash/issues/15))
+
 - 4.0.0 (2025-03-16)
   - Support Laravel 12
   - Drop Lumen
