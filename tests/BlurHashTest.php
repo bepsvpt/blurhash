@@ -129,6 +129,19 @@ class BlurHashTest extends TestCase
         $this->assertSame($hash, $blurhash->encode($path));
     }
 
+    public function test_php_vips_driver_encode_regressions(): void
+    {
+        // https://github.com/bepsvpt/blurhash/issues/15
+        $path = $this->file('13.jpg');
+
+        $blurhash = new BlurHash('php-vips');
+
+        $this->assertSame(
+            'LTI#x_%M-;ay~qoft7ay-;WBM{t7',
+            $blurhash->encode($path),
+        );
+    }
+
     public function test_different_formats_encode(): void
     {
         $hash = new BlurHash('gd');

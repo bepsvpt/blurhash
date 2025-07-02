@@ -118,7 +118,11 @@ class VipsDriver extends Driver
             return false;
         }
 
-        $idx = $x * 3 + $this->width * $y * 3;
+        $idx = $x * $image->bands + $this->width * $y * $image->bands;
+
+        if ($image->bands === 1) {
+            return [$this->pixels[$idx], $this->pixels[$idx], $this->pixels[$idx]];
+        }
 
         return [
             $this->pixels[$idx],
