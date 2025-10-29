@@ -212,7 +212,11 @@ class BlurHashTest extends TestCase
 
         imagejpeg($image, $fp);
 
-        $path = stream_get_meta_data($fp)['uri'];
+        $meta = stream_get_meta_data($fp);
+
+        $this->assertArrayHasKey('uri', $meta);
+
+        $path = $meta['uri'];
 
         $this->assertSame(md5_file($this->file('10.jpg')), md5_file($path));
     }
@@ -231,7 +235,11 @@ class BlurHashTest extends TestCase
 
         $this->assertIsResource($fp);
 
-        $path = stream_get_meta_data($fp)['uri'];
+        $meta = stream_get_meta_data($fp);
+
+        $this->assertArrayHasKey('uri', $meta);
+
+        $path = $meta['uri'];
 
         $this->assertTrue($image->writeImage('jpg:'.$path));
 
@@ -257,7 +265,11 @@ class BlurHashTest extends TestCase
 
         $this->assertIsResource($fp);
 
-        $path = stream_get_meta_data($fp)['uri'];
+        $meta = stream_get_meta_data($fp);
+
+        $this->assertArrayHasKey('uri', $meta);
+
+        $path = $meta['uri'];
 
         $image->jpegsave($path);
 
