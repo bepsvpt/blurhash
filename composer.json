@@ -25,10 +25,10 @@
     "larastan/larastan": "^3.7",
     "laravel/pint": "^1.25",
     "orchestra/testbench": "^6.47 || ^7.55 || ^8.36 || ^9.15 || ^10.6",
-    "phpunit/phpunit": "^9.6 || ^10.5 || ^11.5 || ^12.4",
     "phpstan/extension-installer": "^1.4",
     "phpstan/phpstan-deprecation-rules": "^2.0",
-    "phpstan/phpstan-phpunit": "^2.0"
+    "phpstan/phpstan-phpunit": "^2.0",
+    "phpunit/phpunit": "^9.6 || ^10.5 || ^11.5 || ^12.4"
   },
   "suggest": {
     "ext-ffi": "Required to use php-vips driver.",
