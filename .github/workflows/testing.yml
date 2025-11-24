@@ -12,23 +12,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup PHP with PECL extension
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: '8.5'
           coverage: xdebug
 
       - name: Get composer cache directory
-        run: echo "COMPOSER_DIR=$(composer config cache-files-dir)" >> $GITHUB_ENV
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
-      - name: Cache dependencies
-        uses: actions/cache@v4
+      - uses: actions/cache@v4
         with:
-          path: ${{ env.COMPOSER_DIR }}
+          path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-static-analysis-${{ hashFiles('**/composer.json') }}
-          restore-keys: ${{ runner.os }}-composer-static-analysis-
+          restore-keys: |
+            ${{ runner.os }}-composer-static-analysis-
+            ${{ runner.os }}-composer-
 
       - name: Install dependencies
         run: composer update --no-progress --no-interaction
@@ -59,9 +61,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        laravel: ['12.0', '11.0', '10.0', '9.0', '8.0']
-        php: ['8.4', '8.3', '8.2', '8.1', '8.0']
-        os: [ubuntu-latest, macOS-latest]
+        laravel: [ '12.0', '11.0', '10.0', '9.0', '8.0' ]
+        php: [ '8.5', '8.4', '8.3', '8.2', '8.1', '8.0' ]
+        os: [ ubuntu-latest, macOS-latest ]
         exclude:
           - laravel: '10.0'
             php: '8.0'
@@ -75,7 +77,7 @@ jobs:
             php: '8.1'
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup PHP with PECL extension
         uses: shivammathur/setup-php@v2
@@ -94,14 +96,19 @@ jobs:
         run: brew install vips
 
       - name: Get composer cache directory
-        run: echo "COMPOSER_DIR=$(composer config cache-files-dir)" >> $GITHUB_ENV
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
-      - name: Cache dependencies
-        uses: actions/cache@v4
+      - uses: actions/cache@v4
         with:
-          path: ${{ env.COMPOSER_DIR }}
+          path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-laravel-${{ matrix.laravel }}-php-${{ matrix.php }}-${{ hashFiles('**/composer.json') }}
-          restore-keys: ${{ runner.os }}-composer-laravel-
+          restore-keys: |
+            ${{ runner.os }}-composer-laravel-${{ matrix.laravel }}-php-${{ matrix.php }}-
+            ${{ runner.os }}-composer-laravel-${{ matrix.laravel }}-php-
+            ${{ runner.os }}-composer-laravel-${{ matrix.laravel }}-
+            ${{ runner.os }}-composer-laravel-
+            ${{ runner.os }}-composer-
 
       - name: Remove static analysis packages to prevent platform issues
         run: composer remove --dev --no-update ergebnis/composer-normalize laravel/pint larastan/larastan
