@@ -1,4 +1,8 @@
 parameters:
+    phpVersion:
+        min: 80000 # PHP 8.0
+        max: 80599 # PHP 8.5
+
     level: max
 
     paths:
