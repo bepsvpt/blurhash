@@ -56,15 +56,13 @@ class GdDriver extends Driver
 
         $type = exif_imagetype($path);
 
-        if ($type === false || ! isset($supported[$type])) {
+        if ($type === false || ! isset($supported[$type]) || ! is_callable($supported[$type])) {
             throw new UnsupportedFileException(
                 sprintf('The "%s" is not a supported image file.', $path),
             );
         }
 
-        $callback = $supported[$type];
-
-        $image = call_user_func($callback, $path);
+        $image = $supported[$type]($path);
 
         if (! ($image instanceof GdImage)) {
             throw new UnableToReadFileException(
