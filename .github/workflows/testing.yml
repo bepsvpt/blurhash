@@ -3,7 +3,7 @@ name: Testing
 on:
   push:
   schedule:
-    - cron: '0 0 * * 1' # run tests on every week Monday
+    - cron: '0 0 * * 1'
 
 jobs:
   static_analysis:
@@ -61,9 +61,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        laravel: [ '12.0', '11.0', '10.0', '9.0', '8.0' ]
-        php: [ '8.5', '8.4', '8.3', '8.2', '8.1', '8.0' ]
-        os: [ ubuntu-latest, macOS-latest ]
+        laravel: ['8.0', '9.0', '10.0', '11.0', '12.0', '13.0']
+        php: ['8.5', '8.4', '8.3', '8.2', '8.1', '8.0']
+        os: [ubuntu-latest, macOS-latest]
         exclude:
           - laravel: '10.0'
             php: '8.0'
@@ -75,6 +75,12 @@ jobs:
             php: '8.0'
           - laravel: '12.0'
             php: '8.1'
+          - laravel: '13.0'
+            php: '8.2'
+          - laravel: '13.0'
+            php: '8.1'
+          - laravel: '13.0'
+            php: '8.0'
 
     steps:
       - uses: actions/checkout@v6
@@ -86,13 +92,13 @@ jobs:
           extensions: fileinfo, gd, imagick, exif, ffi
 
       - name: Install libvips on Linux
-        if: "runner.os == 'Linux'"
+        if: runner.os == 'Linux'
         env:
           DEBIAN_FRONTEND: noninteractive
         run: sudo apt-get update && sudo apt-get install --yes libvips
 
       - name: Install libvips on macOS
-        if: "runner.os == 'macOS'"
+        if: runner.os == 'macOS'
         run: brew install vips
 
       - name: Get composer cache directory
