@@ -90,6 +90,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: fileinfo, gd, imagick, exif, ffi
+          coverage: xdebug
 
       - name: Install libvips on Linux
         if: runner.os == 'Linux'
