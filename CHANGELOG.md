@@ -2,6 +2,9 @@
 
 ## 4.x
 
+- 4.1.0 (2026-03-18)
+  - Support Laravel 13
+
 - 4.0.1 (2025-07-02)
   - Fix vips driver encoding issue for single band image ([#15](https://github.com/bepsvpt/blurhash/issues/15))
 
