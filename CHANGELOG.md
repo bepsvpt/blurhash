@@ -2,6 +2,9 @@
 
 ## 4.x
 
+- 4.1.1 (2026-10-02)
+  - Fix fatal error when an unused driver's optional dependency is not installed ([#17](https://github.com/bepsvpt/blurhash/issues/17))
+
 - 4.1.0 (2026-03-18)
   - Support Laravel 13
 
