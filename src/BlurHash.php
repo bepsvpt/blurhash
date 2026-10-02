@@ -325,6 +325,8 @@ class BlurHash
     /**
      * Encode an image to BlurHash string.
      *
+     * @phpstan-impure
+     *
      * @throws UnableToGetColorException
      */
     public function encode(UploadedFile|string $data): string
