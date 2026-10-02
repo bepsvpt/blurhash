@@ -35,10 +35,12 @@ class GdDriver extends Driver
     /**
      * {@inheritdoc}
      *
+     * @return GdImage
+     *
      * @throws UnableToReadFileException
      * @throws UnsupportedFileException
      */
-    public function read(string $path): GdImage
+    public function read(string $path): object
     {
         $supported = [
             IMAGETYPE_GIF => 'imagecreatefromgif',
@@ -77,10 +79,11 @@ class GdDriver extends Driver
      * {@inheritdoc}
      *
      * @param  GdImage  $origin
+     * @return GdImage
      *
      * @throws UnableToConvertColorException
      */
-    public function resize(object $origin): GdImage
+    public function resize(object $origin): object
     {
         if (imagepalettetotruecolor($origin) === false) {
             throw new UnableToConvertColorException;

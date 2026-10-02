@@ -44,9 +44,11 @@ class VipsDriver extends Driver
     /**
      * {@inheritdoc}
      *
+     * @return Image
+     *
      * @throws UnsupportedFileException
      */
-    public function read(string $path): Image
+    public function read(string $path): object
     {
         try {
             $this->pixels = [];
@@ -63,8 +65,9 @@ class VipsDriver extends Driver
      * {@inheritdoc}
      *
      * @param  Image  $image
+     * @return Image
      */
-    public function resize(object $image): Image
+    public function resize(object $image): object
     {
         [$width, $height] = $this->size($image);
 

@@ -33,6 +33,29 @@ class BlurHashTest extends TestCase
         return __DIR__.'/images/'.$name;
     }
 
+    public function test_drivers_load_without_optional_dependencies(): void
+    {
+        // php -n skips php.ini, so optional extensions (gd, imagick, ffi) are not loaded,
+        // and the autoloader below only knows this package, so jcupitt/vips is unavailable.
+        $script = sprintf(<<<'PHP'
+            spl_autoload_register(function (string $class): void {
+                $prefix = 'Bepsvpt\\Blurhash\\';
+                if (str_starts_with($class, $prefix)) {
+                    require %s.str_replace('\\', '/', substr($class, strlen($prefix))).'.php';
+                }
+            });
+            foreach (['GdDriver', 'ImagickDriver', 'VipsDriver'] as $driver) {
+                class_exists('Bepsvpt\\Blurhash\\Drivers\\'.$driver);
+            }
+            echo 'ok';
+            PHP, var_export(dirname(__DIR__).'/src/', true));
+
+        exec(sprintf('%s -n -r %s 2>&1', escapeshellarg(PHP_BINARY), escapeshellarg($script)), $output, $code);
+
+        $this->assertSame(0, $code, implode(PHP_EOL, $output));
+        $this->assertSame(['ok'], $output);
+    }
+
     public function test_gd_driver_encode(): void
     {
         $path = $this->file('01.jpg');

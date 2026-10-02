@@ -38,9 +38,11 @@ class ImagickDriver extends Driver
     /**
      * {@inheritdoc}
      *
+     * @return Imagick
+     *
      * @throws UnsupportedFileException
      */
-    public function read(string $path): Imagick
+    public function read(string $path): object
     {
         try {
             return new Imagick($path);
@@ -55,8 +57,9 @@ class ImagickDriver extends Driver
      * {@inheritdoc}
      *
      * @param  Imagick  $image
+     * @return Imagick
      */
-    public function resize(object $image): Imagick
+    public function resize(object $image): object
     {
         try {
             $image->adaptiveResizeImage(
