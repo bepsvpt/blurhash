@@ -33,6 +33,35 @@ class BlurHashTest extends TestCase
         return __DIR__.'/images/'.$name;
     }
 
+    /**
+     * Some php-vips encode results changed in libvips 8.18.
+     * Verified: 8.15.1 and 8.16.1 give the old results; 8.18.0 and 8.18.7 give the new ones.
+     */
+    protected function vipsVersionAtLeast(string $version): bool
+    {
+        return version_compare(Config::version(), $version, '>=');
+    }
+
+    /**
+     * Some Imagick results differ between ImageMagick 6 and 7.
+     * Verified: 6.9.12 gives the old results; 7.1.1 and 7.1.2 give the new ones.
+     */
+    protected function imageMagickVersionAtLeast(string $version): bool
+    {
+        // e.g. "ImageMagick 7.1.2-35 Q16-HDRI aarch64 ..."
+        $parts = explode(' ', Imagick::getVersion()['versionString']);
+
+        return version_compare($parts[1] ?? '0', $version, '>=');
+    }
+
+    /**
+     * HDRI builds (e.g. Homebrew) use floating-point pixels, which changes some Imagick results.
+     */
+    protected function imageMagickIsHdri(): bool
+    {
+        return str_contains(Imagick::getVersion()['versionString'], 'HDRI');
+    }
+
     public function test_drivers_load_without_optional_dependencies(): void
     {
         // php -n skips php.ini, so optional extensions (gd, imagick, ffi) are not loaded,
@@ -110,10 +139,9 @@ class BlurHashTest extends TestCase
 
         $blurhash->setComponentY(5);
 
-        $hash = match (PHP_OS_FAMILY) {
-            'Darwin' => 'iDBND^ae00xu~qIU4nx]?b.8WB9Ft7-;RjIUt6xu%MWBM{kCjYj[s;WBRjRPjYofjZfkkCf5jZWB%gkCM{aeozbIWBjZfk',
-            default => 'iDBND^ae00xu~qIU4nx]?b.8WB9Ft7-;RjIUt6xu%MWBM{kCjYj[s;WBRjRPjYoyjZfkkCf5jZWB%gkCM{aeozbIWBjZfk',
-        };
+        $hash = $this->imageMagickIsHdri()
+            ? 'iDBND^ae00xu~qIU4nx]?b.8WB9Ft7-;RjIUt6xu%MWBM{kCjYj[s;WBRjRPjYofjZfkkCf5jZWB%gkCM{aeozbIWBjZfk'
+            : 'iDBND^ae00xu~qIU4nx]?b.8WB9Ft7-;RjIUt6xu%MWBM{kCjYj[s;WBRjRPjYoyjZfkkCf5jZWB%gkCM{aeozbIWBjZfk';
 
         $this->assertSame($hash, $blurhash->encode($path));
     }
@@ -131,10 +159,9 @@ class BlurHashTest extends TestCase
 
         $blurhash->setMaxSize(256);
 
-        $hash = match (PHP_OS_FAMILY) {
-            'Darwin' => 'L7A^j{V@00%M_NRj4Txu.8RjIUkD',
-            default => 'L7B45kV@00%M_NRj4Txu.8RjIUkD',
-        };
+        $hash = $this->vipsVersionAtLeast('8.18.0')
+            ? 'L7A^j{V@00%M_NRj4Txu.8RjIUkD'
+            : 'L7B45kV@00%M_NRj4Txu.8RjIUkD';
 
         $this->assertSame($hash, $blurhash->encode($path));
 
@@ -144,10 +171,9 @@ class BlurHashTest extends TestCase
 
         $blurhash->setComponentY(5);
 
-        $hash = match (PHP_OS_FAMILY) {
-            'Darwin' => 'iDA-0Mae00xu_NIU4nxu?b.8WBDit7-;RjIUt7xu%MWBM{kCjsj[s;aeRjRPjZofjZkBkCaxjsWB%gj]M{jZt7WVWBoKkC',
-            default => 'iDA-0Mae00xu_NIU4nxu?b.8WBDit7-;RjIUt7xu%MWBM{kCo0j[s;aeRjRPjZofjZkBkCaxjsWB%gj]M{jZt7WVWBoKkC',
-        };
+        $hash = $this->vipsVersionAtLeast('8.18.0')
+            ? 'iDA-0Mae00xu_NIU4nxu?b.8WBDit7-;RjIUt7xu%MWBM{kCjsj[s;aeRjRPjZofjZkBkCaxjsWB%gj]M{jZt7WVWBoKkC'
+            : 'iDA-0Mae00xu_NIU4nxu?b.8WBDit7-;RjIUt7xu%MWBM{kCo0j[s;aeRjRPjZofjZkBkCaxjsWB%gj]M{jZt7WVWBoKkC';
 
         $this->assertSame($hash, $blurhash->encode($path));
     }
@@ -189,10 +215,9 @@ class BlurHashTest extends TestCase
             $hash->encode($this->file('06.png'))
         );
 
-        $hash = match (PHP_OS_FAMILY) {
-            'Darwin' => 'LXTRc+xGd=wJ.8i^enj]hee9e.f6',
-            default => 'LYTRZxs:d=r?.8i_enkChee9e.f6',
-        };
+        $hash = $this->imageMagickVersionAtLeast('7.0.0')
+            ? 'LXTRc+xGd=wJ.8i^enj]hee9e.f6'
+            : 'LYTRZxs:d=r?.8i_enkChee9e.f6';
 
         $this->assertSame(
             $hash,
@@ -266,10 +291,9 @@ class BlurHashTest extends TestCase
 
         $this->assertTrue($image->writeImage('jpg:'.$path));
 
-        $hash = match (PHP_OS_FAMILY) {
-            'Darwin' => '305ada74d76f6ed94ad743659abe2a29',
-            default => 'ba82a5e0c26097c3cad914108e5f69b9',
-        };
+        $hash = $this->imageMagickVersionAtLeast('7.0.0')
+            ? '305ada74d76f6ed94ad743659abe2a29'
+            : 'ba82a5e0c26097c3cad914108e5f69b9';
 
         $this->assertSame($hash, md5_file($path));
     }
